@@ -219,6 +219,8 @@ contract DigitalReserve is Storage {
     }
 
     function withdrawExtraTokens() external {
+        require(msg.sender == owner);
+
         for (uint8 i = 0; i < strategyTokenCount; i++) {
             uint256 tokenBalance = IERC20(strategyTokens[i]).balanceOf(address(this));
             if (tokenBalance > totalTokenStored[i]) {
