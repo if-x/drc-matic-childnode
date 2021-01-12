@@ -6,6 +6,7 @@ import "../Interfaces/Uniswap/IUniswapV2Pair.sol";
 import "../Interfaces/Uniswap/IUniswapV2Router02.sol";
 
 contract Storage {
+    uint8 public strategyTokenCount; // Number of strategy tokens
     address[] public strategyTokens; // Token addresses of vault strategy tokens
     mapping(address => uint8) internal tokenPercentage; // Vault strategy tokens percentage allocation
 
