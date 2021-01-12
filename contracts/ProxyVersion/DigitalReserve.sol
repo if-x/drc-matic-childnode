@@ -213,6 +213,7 @@ contract DigitalReserve is Storage {
         }
 
         // Convert ETH to new strategy tokens
+        delete totalTokenStored;
         totalTokenStored = ArrayHelper.fillArrays(0, strategyTokenCount);
         totalTokenStored = convertEthToStrategyTokens(totalEthTokens, deadline);
     }
