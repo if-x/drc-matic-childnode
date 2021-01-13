@@ -18,7 +18,6 @@ contract Storage {
 
     address internal router;
     address internal drcAddress;
-    address internal owner;
 
     bool internal depositEnabled = false;
     bool internal withdrawalEnabled = true;
@@ -29,13 +28,7 @@ contract Storage {
 
     event StrategyChange(address[] _oldTokens, uint8[] _oldPercents, address[] _newTokens, uint8[] _newPercents);
     event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);
-    event Deposit(
-        address user,
-        uint256 amount,
-        uint256 totalProofOfDeposit,
-        uint256 userProofOfDeposit,
-        uint256 podMinted
-    );
+    event Deposit(address user, uint256 amount, uint256 totalProofOfDeposit, uint256 userProofOfDeposit, uint256 podMinted);
     event Withdraw(
         address user,
         uint256 amount,
