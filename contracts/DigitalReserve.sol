@@ -47,7 +47,8 @@ contract DigitalReserve {
     IUniswapV2Pair private drcEthPair;
     IUniswapV2Router02 private uniswapRouter;
 
-    event StrategyChange(address[] _oldTokens, uint8[] _oldPercents, address[] _newTokens, uint8[] _newPercents);
+    event StrategyChange(address[] oldTokens, uint8[] oldPercentage, address[] newTokens, uint8[] newPercentage);
+    event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);
     event Deposit(
         address user,
         uint256 amount,
@@ -212,7 +213,6 @@ contract DigitalReserve {
         }
     }
 
-    // TODO: Add a rebalancing function without input other than deadline
     function changeStrategy(
         address[] calldata _strategyTokens,
         uint8[] calldata _tokenPercentage,
@@ -250,8 +250,23 @@ contract DigitalReserve {
         }
 
         // Convert ETH to new strategy tokens
-        delete totalTokenStored;
-        totalTokenStored = ArrayHelper.fillArrays(0, strategyTokenCount);
+        totalTokenStored = convertEthToStrategyTokens(totalEthTokens, deadline);
+    }
+
+    function rebalance(uint32 deadline) external {
+        require(msg.sender == owner);
+        require(strategyTokenCount > 0);
+
+        uint8[] memory percentageArray = new uint8[](strategyTokenCount);
+        for (uint8 i = 0; i < strategyTokenCount; i++) {
+            percentageArray[i] += tokenPercentage[strategyTokens[i]];
+        }
+
+        emit Rebalance(strategyTokens, percentageArray);
+
+        // Convert current tokens to ETH
+        uint256 totalEthTokens = convertStrategyTokensToEth(totalTokenStored, deadline);
+        // Convert ETH to new strategy tokens
         totalTokenStored = convertEthToStrategyTokens(totalEthTokens, deadline);
     }
 

@@ -28,6 +28,7 @@ contract Storage {
     IUniswapV2Router02 internal uniswapRouter;
 
     event StrategyChange(address[] _oldTokens, uint8[] _oldPercents, address[] _newTokens, uint8[] _newPercents);
+    event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);
     event Deposit(
         address user,
         uint256 amount,
