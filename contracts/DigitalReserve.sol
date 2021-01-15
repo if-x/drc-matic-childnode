@@ -188,6 +188,7 @@ contract DigitalReserve is Ownable {
         emit StrategyChange(strategyTokens, oldPercentage, _strategyTokens, _tokenPercentage);
 
         // Before mutate strategyTokens, convert current tokens to ETH
+        // TODO: change this to all the real token worth, we want to max what user can get
         uint256 totalEthTokens = _convertStrategyTokensToEth(totalTokenStored, deadline);
 
         // Update strategyTokens
@@ -225,7 +226,7 @@ contract DigitalReserve is Ownable {
         }
     }
 
-    function _withdrawProofOfDeposit(uint256 podToBurn, uint32 deadline) internal {
+    function _withdrawProofOfDeposit(uint256 podToBurn, uint32 deadline) private {
         require(withdrawalEnabled);
 
         // get strategy tokens to withdraw by pod to withdraw
@@ -271,7 +272,7 @@ contract DigitalReserve is Ownable {
         }
     }
 
-    function addTwoArrays(uint256[] memory array1, uint256[] memory array2) internal pure returns (uint256[] memory) {
+    function addTwoArrays(uint256[] memory array1, uint256[] memory array2) private pure returns (uint256[] memory) {
         uint256[] memory array3 = new uint256[](array1.length);
         for (uint256 i = 0; i < array1.length; i++) {
             array3[i] = array1[i].add(array2[i]);
@@ -279,7 +280,7 @@ contract DigitalReserve is Ownable {
         return array3;
     }
 
-    function subTwoArrays(uint256[] memory array1, uint256[] memory array2) internal pure returns (uint256[] memory) {
+    function subTwoArrays(uint256[] memory array1, uint256[] memory array2) private pure returns (uint256[] memory) {
         uint256[] memory array3 = new uint256[](array1.length);
         for (uint256 i = 0; i < array1.length; i++) {
             array3[i] = array1[i].sub(array2[i]);
@@ -287,7 +288,7 @@ contract DigitalReserve is Ownable {
         return array3;
     }
 
-    function _isEnoughDrcReserve(uint256 _amount) internal view returns (bool) {
+    function _isEnoughDrcReserve(uint256 _amount) private view returns (bool) {
         if (drcEthPair.token0() == drcAddress) {
             (uint112 reserves, , ) = drcEthPair.getReserves();
             if (reserves >= _amount) {
@@ -297,7 +298,7 @@ contract DigitalReserve is Ownable {
         return false;
     }
 
-    function _getEthToTokenAmountOut(uint256 _amount, address _tokenAddress) internal view returns (uint256) {
+    function _getEthToTokenAmountOut(uint256 _amount, address _tokenAddress) private view returns (uint256) {
         address[] memory path = new address[](2);
         path[0] = uniswapRouter.WETH();
         path[1] = _tokenAddress;
@@ -308,7 +309,7 @@ contract DigitalReserve is Ownable {
         return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
-    function _getTokenToEthAmountOut(uint256 _amount, address _tokenAddress) internal view returns (uint256) {
+    function _getTokenToEthAmountOut(uint256 _amount, address _tokenAddress) private view returns (uint256) {
         address[] memory path = new address[](2);
         path[0] = _tokenAddress;
         path[1] = uniswapRouter.WETH();
@@ -319,7 +320,7 @@ contract DigitalReserve is Ownable {
         return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
-    function _getStrategyTokensInEth(uint256[] memory _strategyTokensBalance) internal view returns (uint256) {
+    function _getStrategyTokensInEth(uint256[] memory _strategyTokensBalance) private view returns (uint256) {
         uint256 amountOut;
         address[] memory path = new address[](2);
         path[1] = uniswapRouter.WETH();
@@ -335,7 +336,7 @@ contract DigitalReserve is Ownable {
         return amountOut;
     }
 
-    function _getPodAmountInTokens(uint256 _amount) internal view returns (uint256[] memory) {
+    function _getPodAmountInTokens(uint256 _amount) private view returns (uint256[] memory) {
         uint256[] memory strategyTokenAmount = new uint256[](strategyTokenCount);
 
         uint256 podFraction = _amount.mul(1e10).div(totalProofOfDeposit);
@@ -349,7 +350,7 @@ contract DigitalReserve is Ownable {
         uint256 _amount,
         address _tokenAddress,
         uint32 deadline
-    ) internal returns (uint256) {
+    ) private returns (uint256) {
         if (_tokenAddress == uniswapRouter.WETH() || _amount == 0) {
             return _amount;
         }
@@ -366,7 +367,7 @@ contract DigitalReserve is Ownable {
         uint256 _amount,
         address _tokenAddress,
         uint32 deadline
-    ) internal returns (uint256) {
+    ) private returns (uint256) {
         if (_tokenAddress == uniswapRouter.WETH() || _amount == 0) {
             return _amount;
         }
@@ -379,7 +380,7 @@ contract DigitalReserve is Ownable {
         return amountOut;
     }
 
-    function _convertEthToStrategyTokens(uint256 amount, uint32 deadline) internal returns (uint256[] memory) {
+    function _convertEthToStrategyTokens(uint256 amount, uint32 deadline) private returns (uint256[] memory) {
         uint256[] memory amountConverted = new uint256[](strategyTokenCount);
         for (uint8 i = 0; i < strategyTokenCount; i++) {
             address currentToken = strategyTokens[i];
@@ -389,7 +390,7 @@ contract DigitalReserve is Ownable {
         return amountConverted;
     }
 
-    function _convertStrategyTokensToEth(uint256[] memory amountToConvert, uint32 deadline) internal returns (uint256) {
+    function _convertStrategyTokensToEth(uint256[] memory amountToConvert, uint32 deadline) private returns (uint256) {
         uint256 ethConverted;
         for (uint8 i = 0; i < strategyTokenCount; i++) {
             address currentToken = strategyTokens[i];
