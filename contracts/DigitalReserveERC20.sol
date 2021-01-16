@@ -192,22 +192,6 @@ contract DigitalReserveERC20 is ERC20, Ownable {
         emit Withdraw(msg.sender, drcAmount, fees);
     }
 
-    function addTwoArrays(uint256[] memory array1, uint256[] memory array2) private pure returns (uint256[] memory) {
-        uint256[] memory array3 = new uint256[](array1.length);
-        for (uint256 i = 0; i < array1.length; i++) {
-            array3[i] = array1[i].add(array2[i]);
-        }
-        return array3;
-    }
-
-    function subTwoArrays(uint256[] memory array1, uint256[] memory array2) private pure returns (uint256[] memory) {
-        uint256[] memory array3 = new uint256[](array1.length);
-        for (uint256 i = 0; i < array1.length; i++) {
-            array3[i] = array1[i].sub(array2[i]);
-        }
-        return array3;
-    }
-
     function _getTokenAmountByEthAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
         address[] memory path = new address[](2);
         path[0] = uniswapRouter.WETH();
