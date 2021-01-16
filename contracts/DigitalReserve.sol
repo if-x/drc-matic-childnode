@@ -10,10 +10,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Interfaces/Uniswap/IUniswapV2Router02.sol";
 
-contract DigitalReserve is ERC20, Ownable {
+contract DigitalReserve is ERC20("Digital Reserve", "DR-POD"), Ownable {
     using SafeMath for uint256;
 
-    constructor(address _router, address _drcAddress) ERC20("Digital Reserve", "DR-POD") public {
+    constructor(address _router, address _drcAddress) public {
         drcAddress = _drcAddress;
         router = _router;
         uniswapRouter = IUniswapV2Router02(_router);
