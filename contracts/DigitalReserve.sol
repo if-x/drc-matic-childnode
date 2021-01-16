@@ -185,8 +185,6 @@ contract DigitalReserve is Ownable {
     }
 
     function _withdrawProofOfDeposit(uint256 podToBurn, uint32 deadline) private {
-        require(withdrawalEnabled);
-
         // get strategy tokens to withdraw by pod to withdraw
         uint256[] memory strategyTokensToWithdraw = new uint256[](strategyTokenCount);
         strategyTokensToWithdraw = _getStrateTokensByPodAmount(podToBurn);
@@ -227,10 +225,9 @@ contract DigitalReserve is Ownable {
         path[0] = uniswapRouter.WETH();
         path[1] = _tokenAddress;
 
-        if (path[0] == path[1] || _amount == 0) {
-            return _amount;
+        if (path[0] != path[1] && _amount != 0) {
+            return uniswapRouter.getAmountsOut(_amount, path)[1];
         }
-        return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
     function _getEthAmountByTokenAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
@@ -238,10 +235,9 @@ contract DigitalReserve is Ownable {
         path[0] = _tokenAddress;
         path[1] = uniswapRouter.WETH();
 
-        if (path[0] == path[1] || _amount == 0) {
-            return _amount;
+        if (path[0] != path[1] && _amount != 0) {
+            return uniswapRouter.getAmountsOut(_amount, path)[1];
         }
-        return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
     function _getEthAmountByStrategyTokensAmount(uint256[] memory _strategyTokensBalance) private view returns (uint256) {
