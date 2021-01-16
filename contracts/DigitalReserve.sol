@@ -5,15 +5,15 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Interfaces/Uniswap/IUniswapV2Router02.sol";
 
-contract DigitalReserve is Ownable {
+contract DigitalReserve is ERC20, Ownable {
     using SafeMath for uint256;
 
-    constructor(address _router, address _drcAddress) public {
+    constructor(address _router, address _drcAddress) ERC20("Digital Reserve", "DR-POD") public {
         drcAddress = _drcAddress;
         router = _router;
         uniswapRouter = IUniswapV2Router02(_router);
@@ -25,10 +25,6 @@ contract DigitalReserve is Ownable {
     uint8 public feePercentage = 1;
     uint8 public priceDecimal = 18;
 
-    uint8 public proofOfDepositDecimals = 18;
-    uint256 public totalProofOfDeposit;
-    mapping(address => uint256) public userProofOfDeposit;
-
     address private router;
     address private drcAddress;
 
@@ -39,15 +35,8 @@ contract DigitalReserve is Ownable {
 
     event StrategyChange(address[] oldTokens, uint8[] oldPercentage, address[] newTokens, uint8[] newPercentage);
     event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);
-    event Deposit(address user, uint256 amount, uint256 totalProofOfDeposit, uint256 userProofOfDeposit, uint256 podMinted);
-    event Withdraw(
-        address user,
-        uint256 amount,
-        uint256 fees,
-        uint256 totalProofOfDeposit,
-        uint256 userProofOfDeposit,
-        uint256 podBurned
-    );
+    event Deposit(address user, uint256 amount);
+    event Withdraw(address user, uint256 amount, uint256 fees);
 
     function changeDepositStatus(bool _status) external onlyOwner {
         depositEnabled = _status;
@@ -58,7 +47,7 @@ contract DigitalReserve is Ownable {
     }
 
     function changeFee(uint8 _feePercentage) external onlyOwner {
-        require(_feePercentage <= 100);
+        require(_feePercentage <= 100, "Fee percentage exceeded 100.");
         feePercentage = _feePercentage;
     }
 
@@ -71,7 +60,7 @@ contract DigitalReserve is Ownable {
     }
 
     function getUserVaultInDrc(address _user) public view returns (uint256, uint256, uint256) {
-        uint256 userVaultWorthInEth = userProofOfDeposit[_user].mul(getProofOfDepositPrice()).div(1e18);
+        uint256 userVaultWorthInEth = balanceOf(_user).mul(getProofOfDepositPrice()).div(1e18);
 
         uint256 fees = userVaultWorthInEth.mul(feePercentage).div(100);
         uint256 drcAmount = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress);
@@ -82,56 +71,55 @@ contract DigitalReserve is Ownable {
 
     function getProofOfDepositPrice() public view returns (uint256) {
         uint256 proofOfDepositPrice;
-        if (totalProofOfDeposit > 0) {
-            proofOfDepositPrice = _getEthAmountByStrategyTokensAmount(totalTokenStored()).mul(1e18).div(totalProofOfDeposit);
+        if (totalSupply() > 0) {
+            proofOfDepositPrice = _getEthAmountByStrategyTokensAmount(totalTokenStored()).mul(1e18).div(totalSupply());
         }
         return proofOfDepositPrice;
     }
 
     function depositDrc(uint256 _amount, uint32 deadline) external {
-        require(depositEnabled);
+        require(depositEnabled, "Deposit is disabled.");
+        require(IERC20(drcAddress).allowance(msg.sender, address(this)) >= _amount, "Contract is not allowed to spend user's DRC.");
+        require(IERC20(drcAddress).balanceOf(msg.sender) >= _amount, "Attempted to deposit more than balance.");
 
-        require(IERC20(drcAddress).balanceOf(msg.sender) >= _amount);
-        require(IERC20(drcAddress).allowance(msg.sender, address(this)) >= _amount);
         SafeERC20.safeTransferFrom(IERC20(drcAddress), msg.sender, address(this), _amount);
 
         // Get current unit price before adding tokens to vault
         uint256 currentPodUnitPrice = getProofOfDepositPrice();
 
-        _convertTokenToEth(_amount, drcAddress, deadline);
-        _convertEthToStrategyTokens(IERC20(uniswapRouter.WETH()).balanceOf(address(this)), deadline);
+        uint256 ethConverted = _convertTokenToEth(_amount, drcAddress, deadline);
+        _convertEthToStrategyTokens(ethConverted, deadline);
 
         uint256 podToMint = 0;
-        if (totalProofOfDeposit == 0) {
+        if (totalSupply() == 0) {
             podToMint = _amount.mul(1e15);
         } else {
             uint256 vaultTotalInEth = _getEthAmountByStrategyTokensAmount(totalTokenStored());
             uint256 newPodTotal = vaultTotalInEth.mul(1e18).div(currentPodUnitPrice);
-            podToMint = newPodTotal.sub(totalProofOfDeposit);
+            podToMint = newPodTotal.sub(totalSupply());
         }
 
-        userProofOfDeposit[msg.sender] = userProofOfDeposit[msg.sender].add(podToMint);
-        totalProofOfDeposit = totalProofOfDeposit.add(podToMint);
+        _mint(msg.sender, podToMint);
 
-        emit Deposit(msg.sender, _amount, totalProofOfDeposit, userProofOfDeposit[msg.sender], podToMint);
+        emit Deposit(msg.sender, _amount);
     }
 
     function withdrawDrc(uint256 drcAmount, uint32 deadline) external {
-        require(withdrawalEnabled);
+        require(withdrawalEnabled, "Withdraw is disabled.");
 
         (, uint256 userVaultInDrc, ) = getUserVaultInDrc(msg.sender);
-        require(userVaultInDrc >= drcAmount);
+        require(userVaultInDrc >= drcAmount, "Attempt to withdraw more than user's holding.");
 
         uint256 amountFraction = drcAmount.mul(1e10).div(userVaultInDrc);
-        uint256 podToBurn = userProofOfDeposit[msg.sender].mul(amountFraction).div(1e10);
+        uint256 podToBurn = balanceOf(msg.sender).mul(amountFraction).div(1e10);
         _withdrawProofOfDeposit(podToBurn, deadline);
     }
 
     function withdrawPercentage(uint8 percentage, uint32 deadline) external {
-        require(withdrawalEnabled);
-        require(percentage <= 100);
+        require(withdrawalEnabled, "Withdraw is disabled.");
+        require(percentage <= 100, "Attempt to withdraw more than 100% of the asset");
 
-        uint256 podToBurn = userProofOfDeposit[msg.sender].mul(percentage).div(100);
+        uint256 podToBurn = balanceOf(msg.sender).mul(percentage).div(100);
         _withdrawProofOfDeposit(podToBurn, deadline);
     }
 
@@ -141,12 +129,13 @@ contract DigitalReserve is Ownable {
         uint8 _strategyTokenCount,
         uint32 deadline
     ) external onlyOwner {
-        require(_strategyTokenCount >= 1);
-        require(_strategyTokens.length == _strategyTokenCount);
-        require(_tokenPercentage.length == _strategyTokenCount);
-
+        require(_strategyTokenCount >= 1, "Setting strategy to 0 tokens.");
+        require(_strategyTokens.length == _strategyTokenCount, "Token count doesn't match tokens length");
+        require(_tokenPercentage.length == _strategyTokenCount, "Token count doesn't match token percentages length");
+        
         uint8 totalPercentage = 0;
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            require(_strategyTokens[i] != drcAddress, "Token can't be DRC.");
             totalPercentage += _tokenPercentage[i];
         }
         require(totalPercentage == 100);
@@ -160,7 +149,7 @@ contract DigitalReserve is Ownable {
         emit StrategyChange(strategyTokens, oldPercentage, _strategyTokens, _tokenPercentage);
 
         // Before mutate strategyTokens, convert current strategy tokens to ETH
-        _convertStrategyTokensToEth(totalTokenStored(), deadline);
+        uint256 ethConverted = _convertStrategyTokensToEth(totalTokenStored(), deadline);
 
         strategyTokens = _strategyTokens;
         strategyTokenCount = _strategyTokenCount;
@@ -168,7 +157,7 @@ contract DigitalReserve is Ownable {
             tokenPercentage[strategyTokens[i]] = _tokenPercentage[i];
         }
 
-        _convertEthToStrategyTokens(IERC20(uniswapRouter.WETH()).balanceOf(address(this)), deadline);
+        _convertEthToStrategyTokens(ethConverted, deadline);
     }
 
     function rebalance(uint32 deadline) external onlyOwner {
@@ -181,8 +170,8 @@ contract DigitalReserve is Ownable {
 
         emit Rebalance(strategyTokens, percentageArray);
 
-        _convertStrategyTokensToEth(totalTokenStored(), deadline);
-        _convertEthToStrategyTokens(IERC20(uniswapRouter.WETH()).balanceOf(address(this)), deadline);
+        uint256 ethConverted = _convertStrategyTokensToEth(totalTokenStored(), deadline);
+        _convertEthToStrategyTokens(ethConverted, deadline);
     }
 
     function _withdrawProofOfDeposit(uint256 podToBurn, uint32 deadline) private {
@@ -191,18 +180,15 @@ contract DigitalReserve is Ownable {
         strategyTokensToWithdraw = _getStrateTokensByPodAmount(podToBurn);
 
         // Reduce user holding by withdrawed amount in pod and strategy tokens
-        userProofOfDeposit[msg.sender] = userProofOfDeposit[msg.sender].sub(podToBurn);
-        totalProofOfDeposit = totalProofOfDeposit.sub(podToBurn);
+        _burn(msg.sender, podToBurn);
 
-        _convertStrategyTokensToEth(strategyTokensToWithdraw, deadline);
-        uint256 ethSwapped = IERC20(uniswapRouter.WETH()).balanceOf(address(this));
-        uint256 fees = ethSwapped.mul(feePercentage).div(100);
+        uint256 ethConverted = _convertStrategyTokensToEth(strategyTokensToWithdraw, deadline);
+        uint256 fees = ethConverted.mul(feePercentage).div(100);
 
-        _convertEthToToken(ethSwapped.sub(fees), drcAddress, deadline);
-        uint256 drcAmount = IERC20(uniswapRouter.WETH()).balanceOf(address(this));
+        uint256 drcAmount = _convertEthToToken(ethConverted.sub(fees), drcAddress, deadline);
         SafeERC20.safeTransfer(IERC20(drcAddress), msg.sender, drcAmount);
         SafeERC20.safeTransfer(IERC20(uniswapRouter.WETH()), owner(), fees);
-        emit Withdraw(msg.sender, drcAmount, fees, totalProofOfDeposit, userProofOfDeposit[msg.sender], podToBurn);
+        emit Withdraw(msg.sender, drcAmount, fees);
     }
 
     function _getTokenAmountByEthAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
@@ -243,15 +229,15 @@ contract DigitalReserve is Ownable {
 
     function _getStrateTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
         uint256[] memory strategyTokenAmount = new uint256[](strategyTokenCount);
-
-        uint256 podFraction = _amount.mul(1e10).div(totalProofOfDeposit);
+        
+        uint256 podFraction = _amount.mul(1e10).div(totalSupply());
         for (uint8 i = 0; i < strategyTokenCount; i++) {
             strategyTokenAmount[i] = IERC20(strategyTokens[i]).balanceOf(address(this)).mul(podFraction).div(1e10);
         }
         return strategyTokenAmount;
     }
 
-    function _convertTokenToEth(uint256 _amount, address _tokenAddress,uint32 deadline) private {
+    function _convertTokenToEth(uint256 _amount, address _tokenAddress,uint32 deadline) private returns (uint256) {
         if (_tokenAddress != uniswapRouter.WETH() && _amount != 0) {
             address[] memory path = new address[](2);
             path[0] = _tokenAddress;
@@ -259,10 +245,11 @@ contract DigitalReserve is Ownable {
             SafeERC20.safeApprove(IERC20(path[0]), router, _amount);
             uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
             uniswapRouter.swapExactTokensForTokens(_amount, amountOut, path, address(this), deadline);
+            return amountOut;
         }
     }
 
-    function _convertEthToToken(uint256 _amount, address _tokenAddress, uint32 deadline) private {
+    function _convertEthToToken(uint256 _amount, address _tokenAddress, uint32 deadline) private returns (uint256) {
         if (_tokenAddress != uniswapRouter.WETH() && _amount != 0) {
             address[] memory path = new address[](2);
             path[0] = uniswapRouter.WETH();
@@ -270,19 +257,25 @@ contract DigitalReserve is Ownable {
             SafeERC20.safeApprove(IERC20(path[0]), router, _amount);
             uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
             uniswapRouter.swapExactTokensForTokens(_amount, amountOut, path, address(this), deadline);
+            return amountOut;
         }
     }
 
-    function _convertEthToStrategyTokens(uint256 amount, uint32 deadline) private {
+    function _convertEthToStrategyTokens(uint256 amount, uint32 deadline) private returns (uint256[] memory) {
+        uint256[] memory amounts = new uint256[](strategyTokenCount);
         for (uint8 i = 0; i < strategyTokenCount; i++) {
             uint256 amountToConvert = amount.mul(tokenPercentage[strategyTokens[i]]).div(100);
-            _convertEthToToken(amountToConvert, strategyTokens[i], deadline);
+            amounts[i] = _convertEthToToken(amountToConvert, strategyTokens[i], deadline);
         }
+        return amounts;
     }
 
-    function _convertStrategyTokensToEth(uint256[] memory amountToConvert, uint32 deadline) private {
+    function _convertStrategyTokensToEth(uint256[] memory amountToConvert, uint32 deadline) private returns (uint256) {
+        uint256 ethConverted;
         for (uint8 i = 0; i < strategyTokenCount; i++) {
-            _convertTokenToEth(amountToConvert[i], strategyTokens[i], deadline);
+            uint256 amountConverted = _convertTokenToEth(amountToConvert[i], strategyTokens[i], deadline);
+            ethConverted = ethConverted.add(amountConverted);
         }
+        return ethConverted;
     }
 }
