@@ -13,10 +13,7 @@ import "./Interfaces/Uniswap/IUniswapV2Router02.sol";
 contract DigitalReserve is Ownable {
     using SafeMath for uint256;
 
-    constructor(
-        address _router,
-        address _drcAddress
-    ) public {
+    constructor(address _router, address _drcAddress) public {
         drcAddress = _drcAddress;
         router = _router;
         uniswapRouter = IUniswapV2Router02(_router);
@@ -46,7 +43,6 @@ contract DigitalReserve is Ownable {
         address user,
         uint256 amount,
         uint256 fees,
-        string tokenName,
         uint256 totalProofOfDeposit,
         uint256 userProofOfDeposit,
         uint256 podBurned
@@ -88,7 +84,6 @@ contract DigitalReserve is Ownable {
         if (totalProofOfDeposit > 0) {
             proofOfDepositPrice = _getEthAmountByStrategyTokensAmount(totalTokenStored()).mul(1e18).div(totalProofOfDeposit);
         }
-
         return proofOfDepositPrice;
     }
 
@@ -133,7 +128,7 @@ contract DigitalReserve is Ownable {
 
     function withdrawPercentage(uint8 percentage, uint32 deadline) external {
         require(withdrawalEnabled);
-        require(percentage >= 100);
+        require(percentage <= 100);
 
         uint256 podToBurn = userProofOfDeposit[msg.sender].mul(percentage).div(100);
         _withdrawProofOfDeposit(podToBurn, deadline);
@@ -208,7 +203,7 @@ contract DigitalReserve is Ownable {
         uint256 drcAmount = IERC20(uniswapRouter.WETH()).balanceOf(address(this));
         SafeERC20.safeTransfer(IERC20(drcAddress), msg.sender, drcAmount);
         SafeERC20.safeTransfer(IERC20(uniswapRouter.WETH()), owner(), fees);
-        emit Withdraw(msg.sender, drcAmount, fees, "DRC", totalProofOfDeposit, userProofOfDeposit[msg.sender], podToBurn);
+        emit Withdraw(msg.sender, drcAmount, fees, totalProofOfDeposit, userProofOfDeposit[msg.sender], podToBurn);
     }
 
     function addTwoArrays(uint256[] memory array1, uint256[] memory array2) private pure returns (uint256[] memory) {
@@ -275,11 +270,7 @@ contract DigitalReserve is Ownable {
         return strategyTokenAmount;
     }
 
-    function _convertTokenToEth(
-        uint256 _amount,
-        address _tokenAddress,
-        uint32 deadline
-    ) private {
+    function _convertTokenToEth(uint256 _amount, address _tokenAddress,uint32 deadline) private {
         if (_tokenAddress != uniswapRouter.WETH() && _amount != 0) {
             address[] memory path = new address[](2);
             path[0] = _tokenAddress;
@@ -290,11 +281,7 @@ contract DigitalReserve is Ownable {
         }
     }
 
-    function _convertEthToToken(
-        uint256 _amount,
-        address _tokenAddress,
-        uint32 deadline
-    ) private {
+    function _convertEthToToken(uint256 _amount, address _tokenAddress, uint32 deadline) private {
         if (_tokenAddress != uniswapRouter.WETH() && _amount != 0) {
             address[] memory path = new address[](2);
             path[0] = uniswapRouter.WETH();
