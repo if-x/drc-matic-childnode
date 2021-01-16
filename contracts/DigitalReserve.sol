@@ -23,7 +23,7 @@ contract DigitalReserve is ERC20, Ownable {
     address[] public strategyTokens;
     mapping(address => uint8) public tokenPercentage;
     uint8 public feePercentage = 1;
-    uint8 public priceDecimal = 18;
+    uint8 public priceDecimals = 18;
 
     address private router;
     address private drcAddress;
