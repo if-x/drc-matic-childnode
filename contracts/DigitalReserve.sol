@@ -138,7 +138,7 @@ contract DigitalReserve is ERC20, Ownable {
             require(_strategyTokens[i] != drcAddress, "Token can't be DRC.");
             totalPercentage += _tokenPercentage[i];
         }
-        require(totalPercentage == 100);
+        require(totalPercentage == 100, "Total token percentage exceeded 100%.");
 
         uint8[] memory oldPercentage = new uint8[](strategyTokenCount);
         for (uint8 i = 0; i < strategyTokenCount; i++) {
@@ -161,7 +161,7 @@ contract DigitalReserve is ERC20, Ownable {
     }
 
     function rebalance(uint32 deadline) external onlyOwner {
-        require(strategyTokenCount > 0);
+        require(strategyTokenCount > 0, "Strategy hasn't been set");
 
         uint8[] memory percentageArray = new uint8[](strategyTokenCount);
         for (uint8 i = 0; i < strategyTokenCount; i++) {
@@ -175,11 +175,8 @@ contract DigitalReserve is ERC20, Ownable {
     }
 
     function _withdrawProofOfDeposit(uint256 podToBurn, uint32 deadline) private {
-        // get strategy tokens to withdraw by pod to withdraw
-        uint256[] memory strategyTokensToWithdraw = new uint256[](strategyTokenCount);
-        strategyTokensToWithdraw = _getStrateTokensByPodAmount(podToBurn);
+        uint256[] memory strategyTokensToWithdraw = _getStrateTokensByPodAmount(podToBurn);
 
-        // Reduce user holding by withdrawed amount in pod and strategy tokens
         _burn(msg.sender, podToBurn);
 
         uint256 ethConverted = _convertStrategyTokensToEth(strategyTokensToWithdraw, deadline);
