@@ -10,10 +10,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Interfaces/Uniswap/IUniswapV2Router02.sol";
 
-contract DigitalReserve is ERC20("Digital Reserve", "DR-POD"), Ownable {
+contract DigitalReserve is ERC20, Ownable {
     using SafeMath for uint256;
 
-    constructor(address _router, address _drcAddress) public {
+    constructor(
+        address _router,
+        address _drcAddress,
+        string memory _name,
+        string memory _symbol
+    ) public ERC20(_name, _symbol) {
         drcAddress = _drcAddress;
         router = _router;
         uniswapRouter = IUniswapV2Router02(_router);
@@ -132,7 +137,7 @@ contract DigitalReserve is ERC20("Digital Reserve", "DR-POD"), Ownable {
         require(_strategyTokenCount >= 1, "Setting strategy to 0 tokens.");
         require(_strategyTokens.length == _strategyTokenCount, "Token count doesn't match tokens length");
         require(_tokenPercentage.length == _strategyTokenCount, "Token count doesn't match token percentages length");
-        
+
         uint8 totalPercentage = 0;
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
             require(_strategyTokens[i] != drcAddress, "Token can't be DRC.");
@@ -226,7 +231,7 @@ contract DigitalReserve is ERC20("Digital Reserve", "DR-POD"), Ownable {
 
     function _getStrateTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
         uint256[] memory strategyTokenAmount = new uint256[](strategyTokenCount);
-        
+
         uint256 podFraction = _amount.mul(1e10).div(totalSupply());
         for (uint8 i = 0; i < strategyTokenCount; i++) {
             strategyTokenAmount[i] = IERC20(strategyTokens[i]).balanceOf(address(this)).mul(podFraction).div(1e10);
@@ -234,7 +239,7 @@ contract DigitalReserve is ERC20("Digital Reserve", "DR-POD"), Ownable {
         return strategyTokenAmount;
     }
 
-    function _convertTokenToEth(uint256 _amount, address _tokenAddress,uint32 deadline) private returns (uint256) {
+    function _convertTokenToEth(uint256 _amount, address _tokenAddress, uint32 deadline) private returns (uint256) {
         if (_tokenAddress != uniswapRouter.WETH() && _amount != 0) {
             address[] memory path = new address[](2);
             path[0] = _tokenAddress;

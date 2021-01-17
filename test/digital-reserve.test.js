@@ -1,1 +1,1 @@
-const MetaCoin = artifacts.require("MetaCoin");
+const DigitalReserve = artifacts.require("DigitalReserve");
