@@ -198,9 +198,10 @@ contract DigitalReserve is ERC20, Ownable {
         path[0] = uniswapRouter.WETH();
         path[1] = _tokenAddress;
 
-        if (path[0] != path[1] && _amount != 0) {
-            return uniswapRouter.getAmountsOut(_amount, path)[1];
+        if (path[0] == path[1] || _amount == 0) {
+            return _amount;
         }
+        return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
     function _getEthAmountByTokenAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
@@ -208,9 +209,10 @@ contract DigitalReserve is ERC20, Ownable {
         path[0] = _tokenAddress;
         path[1] = uniswapRouter.WETH();
 
-        if (path[0] != path[1] && _amount != 0) {
-            return uniswapRouter.getAmountsOut(_amount, path)[1];
+        if (path[0] == path[1] || _amount == 0) {
+            return _amount;
         }
+        return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
     function _getEthAmountByStrategyTokensAmount(uint256[] memory _strategyTokensBalance) private view returns (uint256) {
@@ -239,28 +241,38 @@ contract DigitalReserve is ERC20, Ownable {
         return strategyTokenAmount;
     }
 
-    function _convertTokenToEth(uint256 _amount, address _tokenAddress, uint32 deadline) private returns (uint256) {
-        if (_tokenAddress != uniswapRouter.WETH() && _amount != 0) {
-            address[] memory path = new address[](2);
-            path[0] = _tokenAddress;
-            path[1] = uniswapRouter.WETH();
-            SafeERC20.safeApprove(IERC20(path[0]), router, _amount);
-            uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
-            uniswapRouter.swapExactTokensForTokens(_amount, amountOut, path, address(this), deadline);
-            return amountOut;
+    function _convertTokenToEth(
+        uint256 _amount,
+        address _tokenAddress,
+        uint32 deadline
+    ) private returns (uint256) {
+        if (_tokenAddress == uniswapRouter.WETH() || _amount == 0) {
+            return _amount;
         }
+        address[] memory path = new address[](2);
+        path[0] = _tokenAddress;
+        path[1] = uniswapRouter.WETH();
+        SafeERC20.safeApprove(IERC20(path[0]), router, _amount);
+        uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
+        uniswapRouter.swapExactTokensForTokens(_amount, amountOut, path, address(this), deadline);
+        return amountOut;
     }
 
-    function _convertEthToToken(uint256 _amount, address _tokenAddress, uint32 deadline) private returns (uint256) {
-        if (_tokenAddress != uniswapRouter.WETH() && _amount != 0) {
-            address[] memory path = new address[](2);
-            path[0] = uniswapRouter.WETH();
-            path[1] = _tokenAddress;
-            SafeERC20.safeApprove(IERC20(path[0]), router, _amount);
-            uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
-            uniswapRouter.swapExactTokensForTokens(_amount, amountOut, path, address(this), deadline);
-            return amountOut;
+    function _convertEthToToken(
+        uint256 _amount,
+        address _tokenAddress,
+        uint32 deadline
+    ) private returns (uint256) {
+        if (_tokenAddress == uniswapRouter.WETH() || _amount == 0) {
+            return _amount;
         }
+        address[] memory path = new address[](2);
+        path[0] = uniswapRouter.WETH();
+        path[1] = _tokenAddress;
+        SafeERC20.safeApprove(IERC20(path[0]), router, _amount);
+        uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
+        uniswapRouter.swapExactTokensForTokens(_amount, amountOut, path, address(this), deadline);
+        return amountOut;
     }
 
     function _convertEthToStrategyTokens(uint256 amount, uint32 deadline) private returns (uint256[] memory) {
