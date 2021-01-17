@@ -103,9 +103,15 @@ dist
 # TernJS port file
 .tern-port
 
+# secrets
+.secrets/
+
+# truffle
+build/
+
 # typechain
-types
+types/
 
 # buidler
-artifacts
-cache
+artifacts/
+cache/
