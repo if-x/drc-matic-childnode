@@ -18,19 +18,14 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
-
+require("dotenv").config();
 require("ts-node").register({
   files: true,
 });
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const mnemonic = "";
-const infuraKey = "";
+const mnemonic = process.env.MNEUMONIC;
+const infuraKey = process.env.INFURA_PROJECT_ID;
 
 module.exports = {
   /**
