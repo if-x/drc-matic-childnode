@@ -121,7 +121,7 @@ The contract owner can execute the following functions:
 - Turn deposit on/off - To protect users' fund if there's any security issue or assist DR upgrade
 - Turn withdraw on/off - To protect users' fund if there's any security issue
 - Rebalancing
-- Change strategy
+- Set/change strategy
 - Change withdrawal fee
 - Change contract owner - If better governance tool is available and the Foundation wallet address is changed
 

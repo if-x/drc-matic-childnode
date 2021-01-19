@@ -9,8 +9,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Interfaces/Uniswap/IUniswapV2Router02.sol";
+import "./Interfaces/IDigitalReserve.sol";
 
-contract DigitalReserve is ERC20, Ownable {
+contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     using SafeMath for uint256;
 
     constructor(
@@ -38,11 +39,6 @@ contract DigitalReserve is ERC20, Ownable {
 
     IUniswapV2Router02 private uniswapRouter;
 
-    event StrategyChange(address[] oldTokens, uint8[] oldPercentage, address[] newTokens, uint8[] newPercentage);
-    event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);
-    event Deposit(address user, uint256 amount);
-    event Withdraw(address user, uint256 amount, uint256 fees);
-
     function changeDepositStatus(bool _status) external onlyOwner {
         depositEnabled = _status;
     }
@@ -56,7 +52,7 @@ contract DigitalReserve is ERC20, Ownable {
         feePercentage = _feePercentage;
     }
 
-    function totalTokenStored() public view returns (uint256[] memory) {
+    function totalTokenStored() public view override returns (uint256[] memory) {
         uint256[] memory amounts = new uint256[](strategyTokenCount);
         for (uint8 i = 0; i < strategyTokenCount; i++) {
             amounts[i] = IERC20(strategyTokens[i]).balanceOf(address(this));
@@ -64,7 +60,7 @@ contract DigitalReserve is ERC20, Ownable {
         return amounts;
     }
 
-    function getUserVaultInDrc(address _user) public view returns (uint256, uint256, uint256) {
+    function getUserVaultInDrc(address _user) public view override returns (uint256, uint256, uint256) {
         uint256 userVaultWorthInEth = balanceOf(_user).mul(getProofOfDepositPrice()).div(1e18);
 
         uint256 fees = userVaultWorthInEth.mul(feePercentage).div(100);
@@ -74,7 +70,7 @@ contract DigitalReserve is ERC20, Ownable {
         return (drcAmount, drcAmountExcludeFees, fees);
     }
 
-    function getProofOfDepositPrice() public view returns (uint256) {
+    function getProofOfDepositPrice() public view override returns (uint256) {
         uint256 proofOfDepositPrice;
         if (totalSupply() > 0) {
             proofOfDepositPrice = _getEthAmountByStrategyTokensAmount(totalTokenStored()).mul(1e18).div(totalSupply());
@@ -82,7 +78,7 @@ contract DigitalReserve is ERC20, Ownable {
         return proofOfDepositPrice;
     }
 
-    function depositDrc(uint256 _amount, uint32 deadline) external {
+    function depositDrc(uint256 _amount, uint32 deadline) external override {
         require(depositEnabled, "Deposit is disabled.");
         require(IERC20(drcAddress).allowance(msg.sender, address(this)) >= _amount, "Contract is not allowed to spend user's DRC.");
         require(IERC20(drcAddress).balanceOf(msg.sender) >= _amount, "Attempted to deposit more than balance.");
@@ -106,10 +102,10 @@ contract DigitalReserve is ERC20, Ownable {
 
         _mint(msg.sender, podToMint);
 
-        emit Deposit(msg.sender, _amount);
+        emit Deposit(msg.sender, _amount, podToMint, totalSupply());
     }
 
-    function withdrawDrc(uint256 drcAmount, uint32 deadline) external {
+    function withdrawDrc(uint256 drcAmount, uint32 deadline) external override {
         require(withdrawalEnabled, "Withdraw is disabled.");
 
         (, uint256 userVaultInDrc, ) = getUserVaultInDrc(msg.sender);
@@ -120,7 +116,7 @@ contract DigitalReserve is ERC20, Ownable {
         _withdrawProofOfDeposit(podToBurn, deadline);
     }
 
-    function withdrawPercentage(uint8 percentage, uint32 deadline) external {
+    function withdrawPercentage(uint8 percentage, uint32 deadline) external override {
         require(withdrawalEnabled, "Withdraw is disabled.");
         require(percentage <= 100, "Attempt to withdraw more than 100% of the asset");
 
@@ -189,7 +185,7 @@ contract DigitalReserve is ERC20, Ownable {
         uint256 drcAmount = _convertEthToToken(ethConverted.sub(fees), drcAddress, deadline);
         SafeERC20.safeTransfer(IERC20(drcAddress), msg.sender, drcAmount);
         SafeERC20.safeTransfer(IERC20(uniswapRouter.WETH()), owner(), fees);
-        emit Withdraw(msg.sender, drcAmount, fees);
+        emit Withdraw(msg.sender, drcAmount, fees, podToBurn, totalSupply());
     }
 
     function _getTokenAmountByEthAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
