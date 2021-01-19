@@ -140,7 +140,6 @@ contract DigitalReserve is ERC20, Ownable {
 
         uint8 totalPercentage = 0;
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
-            require(_strategyTokens[i] != drcAddress, "Token can't be DRC.");
             totalPercentage += _tokenPercentage[i];
         }
         require(totalPercentage == 100, "Total token percentage exceeded 100%.");
