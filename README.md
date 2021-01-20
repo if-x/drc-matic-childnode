@@ -131,7 +131,7 @@ The contract owner can execute the following functions:
 
 #### strategyTokenCount
 
-```sol
+```JS
 function strategyTokenCount() external view returns (uint8);
 ```
 
@@ -139,7 +139,7 @@ Returns length of the portfolio asset tokens. Can be used to get token addresses
 
 #### strategyTokens
 
-```sol
+```JS
 function strategyTokens(uint8 index) external view returns (address);
 ```
 
@@ -147,7 +147,7 @@ Returns strategy token address at `index`.
 
 #### tokenPercentage
 
-```sol
+```JS
 function tokenPercentage(address tokenAddress) external view returns (uint8);
 ```
 
@@ -155,7 +155,7 @@ Returns strategy token percentage allocation.
 
 #### feePercentage
 
-```sol
+```JS
 function feePercentage() external view returns (uint8);
 ```
 
@@ -163,7 +163,7 @@ Returns withdrawal fee percentage.
 
 #### priceDecimals
 
-```sol
+```JS
 function priceDecimals() external view returns (uint8);
 ```
 
@@ -171,7 +171,7 @@ Returns Proof of Deposit price decimal `18`.
 
 #### totalTokenStored
 
-```sol
+```JS
 function totalTokenStored() external view returns (uint256[] memory);
 ```
 
@@ -179,7 +179,7 @@ Returns total strategy tokens stored.
 
 #### getUserVaultInDrc
 
-```sol
+```JS
 function getUserVaultInDrc(address user) external view returns (uint256, uint256, uint256);
 ```
 
@@ -187,7 +187,7 @@ Returns how much user's vault share in DRC amount. The first output is total wor
 
 #### getUserVaultInDrc
 
-```sol
+```JS
 function getProofOfDepositPrice() external view returns (uint256);
 ```
 
@@ -197,7 +197,7 @@ Returns Proof of Deposit net unit worth.
 
 #### depositDrc
 
-```sol
+```JS
 function depositDrc(uint256 _amount, uint32 deadline) external;
 ```
 
@@ -205,7 +205,7 @@ Deposit DRC to DR. deadline	is Unix timestamp after which the transaction will r
 
 #### withdrawDrc
 
-```sol
+```JS
 function withdrawDrc(uint256 drcAmount, uint32 deadline) external;
 ```
 
@@ -213,7 +213,7 @@ Withdraw DRC from DR. deadline	is Unix timestamp after which the transaction wil
 
 #### withdrawPercentage
 
-```sol
+```JS
 function withdrawPercentage(uint8 percentage, uint32 deadline) external;
 ```
 
@@ -221,7 +221,7 @@ function withdrawPercentage(uint8 percentage, uint32 deadline) external;
 
 #### StrategyChange
 
-```sol
+```JS
 event StrategyChange(address[] oldTokens, uint8[] oldPercentage, address[] newTokens, uint8[] newPercentage);
 ```
 
@@ -229,7 +229,7 @@ Emit when strategy set or change function is called by owner.
 
 #### Rebalance
 
-```sol
+```JS
 event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);
 ```
 
@@ -237,7 +237,7 @@ Emit each time a rebalance function is called by owner.
 
 #### Deposit
 
-```sol
+```JS
 event Deposit(address user, uint256 amount, uint256 podMinted, uint256 podTotalSupply);
 ```
 
@@ -245,7 +245,7 @@ Emit each time a deposit action happened.
 
 #### Withdraw
 
-```sol
+```JS
 event Withdraw(address user, uint256 amount, uint256 fees, uint256 podBurned, uint256 podTotalSupply);
 ```
 
