@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
 pragma solidity ^0.6.0;
 
@@ -11,15 +11,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Interfaces/Uniswap/IUniswapV2Router02.sol";
 import "./Interfaces/IDigitalReserve.sol";
 
+/**
+ * @dev Implementation of Digital Reserve contract.
+ * Digital Reserve contract converts user's DRC into a set of SoV assets using the Uniswap router, 
+ * and hold these assets for it's users. 
+ * When users initiate a withdrawal action, the contract converts a share of the vault, 
+ * that the user is requesting, to DRC and sends it back to their wallet.
+ */
 contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     using SafeMath for uint256;
 
+    /**
+     * @dev Set Uniswap router address, DRC token address, DR name.
+     */
     constructor(
         address _router,
         address _drcAddress,
-        string memory _name,
-        string memory _symbol
-    ) public ERC20(_name, _symbol) {
+        string memory _name
+    ) public ERC20(_name, "DR-POD") {
         drcAddress = _drcAddress;
         router = _router;
         uniswapRouter = IUniswapV2Router02(_router);
@@ -39,26 +48,44 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
 
     IUniswapV2Router02 private uniswapRouter;
 
+    /**
+     * @dev See {IDigitalReserve-strategyTokenCount}.
+     */
     function strategyTokenCount() external view override returns (uint8) {
         return _strategyTokenCount;
     }
 
+    /**
+     * @dev See {IDigitalReserve-strategyTokens}.
+     */
     function strategyTokens(uint8 index) external view override returns (address) {
         return _strategyTokens[index];
     }
 
+    /**
+     * @dev See {IDigitalReserve-tokenPercentage}.
+     */
     function tokenPercentage(address tokenAddress) external view override returns (uint8) {
         return _tokenPercentage[tokenAddress];
     }
 
+    /**
+     * @dev See {IDigitalReserve-feePercentage}.
+     */
     function feePercentage() external view override returns (uint8) {
         return _feePercentage;
     }
 
+    /**
+     * @dev See {IDigitalReserve-priceDecimals}.
+     */
     function priceDecimals() external view override returns (uint8) {
         return _priceDecimals;
     }
 
+    /**
+     * @dev See {IDigitalReserve-totalTokenStored}.
+     */
     function totalTokenStored() public view override returns (uint256[] memory) {
         uint256[] memory amounts = new uint256[](_strategyTokenCount);
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
@@ -67,6 +94,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return amounts;
     }
 
+    /**
+     * @dev See {IDigitalReserve-getUserVaultInDrc}.
+     */
     function getUserVaultInDrc(address user) public view override returns (uint256, uint256, uint256) {
         uint256 userVaultWorthInEth = balanceOf(user).mul(getProofOfDepositPrice()).div(1e18);
 
@@ -77,6 +107,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return (drcAmount, drcAmountExcludeFees, fees);
     }
 
+    /**
+     * @dev See {IDigitalReserve-getProofOfDepositPrice}.
+     */
     function getProofOfDepositPrice() public view override returns (uint256) {
         uint256 proofOfDepositPrice;
         if (totalSupply() > 0) {
@@ -85,6 +118,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return proofOfDepositPrice;
     }
 
+    /**
+     * @dev See {IDigitalReserve-depositDrc}.
+     */
     function depositDrc(uint256 drcAmount, uint32 deadline) external override {
         require(depositEnabled, "Deposit is disabled.");
         require(IERC20(drcAddress).allowance(msg.sender, address(this)) >= drcAmount, "Contract is not allowed to spend user's DRC.");
@@ -112,6 +148,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         emit Deposit(msg.sender, drcAmount, podToMint, totalSupply());
     }
 
+    /**
+     * @dev See {IDigitalReserve-withdrawDrc}.
+     */
     function withdrawDrc(uint256 drcAmount, uint32 deadline) external override {
         require(withdrawalEnabled, "Withdraw is disabled.");
 
@@ -123,6 +162,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         _withdrawProofOfDeposit(podToBurn, deadline);
     }
 
+    /**
+     * @dev See {IDigitalReserve-withdrawPercentage}.
+     */
     function withdrawPercentage(uint8 percentage, uint32 deadline) external override {
         require(withdrawalEnabled, "Withdraw is disabled.");
         require(percentage <= 100, "Attempt to withdraw more than 100% of the asset");
@@ -131,19 +173,37 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         _withdrawProofOfDeposit(podToBurn, deadline);
     }
 
+    /**
+     * @dev Enable or disable deposit.
+     * Disable deposit if it is to protect users' fund if there's any security issue or assist DR upgrade.
+     */
     function changeDepositStatus(bool _status) external onlyOwner {
         depositEnabled = _status;
     }
 
+    /**
+     * @dev Enable or disable withdrawal.
+     * Disable withdrawal if it is to protect users' fund if there's any security issue.
+     */
     function changeWithdrawalStatus(bool _status) external onlyOwner {
         withdrawalEnabled = _status;
     }
 
+    /**
+     * @dev Change withdrawal fee percentage.
+     */
     function changeFee(uint8 feePercentage_) external onlyOwner {
         require(feePercentage_ <= 100, "Fee percentage exceeded 100.");
         _feePercentage = feePercentage_;
     }
 
+    /**
+     * @dev Set or change DR strategy tokens and allocations.
+     * @param strategyTokens_ Array of strategy tokens.
+     * @param tokenPercentage_ Array of strategy tokens' percentage allocations.
+     * @param strategyTokenCount_ Number of strategy tokens.
+     * @param deadline Unix timestamp after which the transaction will revert.
+     */
     function changeStrategy(
         address[] calldata strategyTokens_,
         uint8[] calldata tokenPercentage_,
@@ -180,6 +240,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         _convertEthToStrategyTokens(ethConverted, deadline);
     }
 
+    /**
+     * @dev Realigning the weighting of a portfolio of assets to the strategy allocation that is defined.
+     * @param deadline Unix timestamp after which the transaction will revert.
+     */
     function rebalance(uint32 deadline) external onlyOwner {
         require(_strategyTokenCount > 0, "Strategy hasn't been set");
 
@@ -194,6 +258,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         _convertEthToStrategyTokens(ethConverted, deadline);
     }
 
+    /**
+     * @dev Withdraw DRC by DR-POD amount to burn.
+     * @param podToBurn Amount of DR-POD to burn in exchange for DRC.
+     * @param deadline Unix timestamp after which the transaction will revert.
+     */
     function _withdrawProofOfDeposit(uint256 podToBurn, uint32 deadline) private {
         uint256[] memory strategyTokensToWithdraw = _getStrateTokensByPodAmount(podToBurn);
 
@@ -208,6 +277,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         emit Withdraw(msg.sender, drcAmount, fees, podToBurn, totalSupply());
     }
 
+    /**
+     * @dev Get the worth in a token of a certain amount of ETH.
+     * @param _amount Amount of ETH to convert.
+     * @param _tokenAddress Address of the token to convert to.
+     */
     function _getTokenAmountByEthAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
         address[] memory path = new address[](2);
         path[0] = uniswapRouter.WETH();
@@ -219,6 +293,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
+    /**
+     * @dev Get ETH worth of a certain amount of a token.
+     * @param _amount Amount of token to convert.
+     * @param _tokenAddress Address of token to convert from.
+     */
     function _getEthAmountByTokenAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
         address[] memory path = new address[](2);
         path[0] = _tokenAddress;
@@ -230,6 +309,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return uniswapRouter.getAmountsOut(_amount, path)[1];
     }
 
+    /**
+     * @dev Get ETH worth of an array of strategy tokens.
+     * @param strategyTokensBalance_ Array amounts of strategy tokens to convert.
+     */
     function _getEthAmountByStrategyTokensAmount(uint256[] memory strategyTokensBalance_) private view returns (uint256) {
         uint256 amountOut;
         address[] memory path = new address[](2);
@@ -246,6 +329,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return amountOut;
     }
 
+    /**
+     * @dev Get DR-POD worth in an array of strategy tokens.
+     * @param _amount Amount of DR-POD to convert.
+     */
     function _getStrateTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
         uint256[] memory strategyTokenAmount = new uint256[](_strategyTokenCount);
 
@@ -256,6 +343,12 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return strategyTokenAmount;
     }
 
+    /**
+     * @dev Convert a token to WETH via the Uniswap router.
+     * @param _amount Amount of tokens to swap.
+     * @param _tokenAddress Address of token to swap.
+     * @param deadline Unix timestamp after which the transaction will revert.
+     */
     function _convertTokenToEth(
         uint256 _amount,
         address _tokenAddress,
@@ -273,6 +366,12 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return amountOut;
     }
 
+    /**
+     * @dev Convert ETH to another token via the Uniswap router.
+     * @param _amount Amount of WETH to swap.
+     * @param _tokenAddress Address of token to swap to.
+     * @param deadline Unix timestamp after which the transaction will revert.
+     */
     function _convertEthToToken(
         uint256 _amount,
         address _tokenAddress,
@@ -290,6 +389,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return amountOut;
     }
 
+    /**
+     * @dev Convert ETH to strategy tokens of DR in their allocation percentage.
+     * @param amount Amount of WETH to swap.
+     * @param deadline Unix timestamp after which the transaction will revert.
+     */
     function _convertEthToStrategyTokens(uint256 amount, uint32 deadline) private returns (uint256[] memory) {
         uint256[] memory amounts = new uint256[](_strategyTokenCount);
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
@@ -299,6 +403,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         return amounts;
     }
 
+    /**
+     * @dev Convert strategy tokens to WETH.
+     * @param amountToConvert Array of the amounts of strategy tokens to swap.
+     * @param deadline Unix timestamp after which the transaction will revert.
+     */
     function _convertStrategyTokensToEth(uint256[] memory amountToConvert, uint32 deadline) private returns (uint256) {
         uint256 ethConverted;
         for (uint8 i = 0; i < _strategyTokenCount; i++) {

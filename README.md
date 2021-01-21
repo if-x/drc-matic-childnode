@@ -4,7 +4,7 @@ Digital Reserve (DR) is an online platform where DRC token holders will be able 
 
 ## How it works
 
-Digital Reserve contract converts user's DRC into a set of SoV assets using the Uniswap router, and hold these assets for it's users. When user initiate a withdrawal action, the contract converts a share of the vault, that the user is requesting, to DRC and sends it back to their wallet.
+Digital Reserve contract converts user's DRC into a set of SoV assets using the Uniswap router, and hold these assets for it's users. When users initiate a withdrawal action, the contract converts a share of the vault, that the user is requesting, to DRC and sends it back to their wallet.
 
 ## Deposit
 
@@ -26,7 +26,7 @@ Before converting DRC into other tokens, the contract will calculate the current
 
 The deposited DRC will first be converted to WETH via the Uniswap router. Then the WETH will be divided by the portfolio assets' allocation percentages, and be converted to portfolio assets.
 
-The new assets' total worth then are calculated. New DR-POD total would be the new total worth divided by the current unit price. The newly minted amount of DR-POD will then be given to the user as their Proof of Deposit.
+The new assets' total worth then are calculated. The new DR-POD total would be the new total worth divided by the current unit price. The newly minted amount of DR-POD will then be given to the user as their Proof of Deposit.
 
 ## Withdrawal
 
@@ -44,21 +44,21 @@ Users can enter an amount of DRC that they want to withdraw from DR. Note: the t
 
 The contract will check the user's total assets value in DRC, and find out the fraction of their total they are withdrawing.
 
-That fraction of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD will be burned and proceed the withdraw by the DR-POD amount. Details of DR-POD withdrawal is [here](#internal-function-withdraw-by-dr-pod-amount).
+That fraction of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD will be burned and proceed the withdrawal of the DR-POD amount. Details of DR-POD withdrawal are [here](#internal-function-withdraw-by-dr-pod-amount).
 
 ### Method 2: Withdraw a certain percentage of user's holding
 
 User can also enter a percentage of their holding they want to withdraw from the DR vault.
 
-The percentage of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD will be burned and proceed the withdraw by the DR-POD amount. Details of DR-POD withdrawal is [here](#internal-function-withdraw-by-dr-pod-amount).
+The percentage of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD will be burned and proceed the withdrawal of the DR-POD amount. Details of DR-POD withdrawal are [here](#internal-function-withdraw-by-dr-pod-amount).
 
 ### Internal function: Withdraw by DR-POD amount
 
 Both withdrawal methods are using the DR-POD amount to withdraw users holding.
 
-The function takes the input amount of DR-POD, and calculates the fraction it is to the total amount of DR-POD in the vault. And this is the value of the fraction of each portfolio asset will be withdrawn.
+The function takes the input amount of DR-POD, and calculates the fraction of the total amount of DR-POD in the vault. This is the value of the corresponding fraction of each asset in the portfolio that will be withdrawn.
 
-For each portfolio asset, the withdrawal fraction of it will first be converted to WETH. Then the WETH will be further converted to DRC and send to the user.
+For each portfolio asset, the withdrawal fraction of it will first be converted to WETH. Then the WETH will be further converted to DRC and sent to the user.
 
 Note: A 1% fee will be applied at the time of withdrawal, which helps fund the portfolio strategy rebalancing and development of the Digital Reserve. Fees are sent to the DRC Foundation Fund Multi-sig Wallet.
 
@@ -216,6 +216,8 @@ Withdraw DRC from DR. deadline	is Unix timestamp after which the transaction wil
 ```JS
 function withdrawPercentage(uint8 percentage, uint32 deadline) external;
 ```
+
+Withdraw a percentage of holding from DR. deadline	is Unix timestamp after which the transaction will revert.
 
 ### Events
 
