@@ -101,8 +101,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         uint256 userVaultWorthInEth = balanceOf(user).mul(getProofOfDepositPrice()).div(1e18);
 
         uint256 fees = userVaultWorthInEth.mul(_feePercentage).div(100);
-        uint256 drcAmount = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress);
-        uint256 drcAmountExcludeFees = _getTokenAmountByEthAmount(userVaultWorthInEth.sub(fees), drcAddress);
+        uint256 drcAmount = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress, false);
+        uint256 drcAmountExcludeFees = _getTokenAmountByEthAmount(userVaultWorthInEth.sub(fees), drcAddress, false);
 
         return (drcAmount, drcAmountExcludeFees, fees);
     }
@@ -113,7 +113,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     function getProofOfDepositPrice() public view override returns (uint256) {
         uint256 proofOfDepositPrice;
         if (totalSupply() > 0) {
-            proofOfDepositPrice = _getEthAmountByStrategyTokensAmount(totalTokenStored()).mul(1e18).div(totalSupply());
+            proofOfDepositPrice = _getEthAmountByStrategyTokensAmount(totalTokenStored(), true).mul(1e18).div(totalSupply());
         }
         return proofOfDepositPrice;
     }
@@ -138,7 +138,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         if (totalSupply() == 0) {
             podToMint = drcAmount.mul(1e15);
         } else {
-            uint256 vaultTotalInEth = _getEthAmountByStrategyTokensAmount(totalTokenStored());
+            uint256 vaultTotalInEth = _getEthAmountByStrategyTokensAmount(totalTokenStored(), true);
             uint256 newPodTotal = vaultTotalInEth.mul(1e18).div(currentPodUnitPrice);
             podToMint = newPodTotal.sub(totalSupply());
         }
@@ -242,20 +242,57 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
 
     /**
      * @dev Realigning the weighting of a portfolio of assets to the strategy allocation that is defined.
+     * Only convert the amount that's necessory to convert to not be charged 0.3% uniswap fee for everything.
+     * This in total saves 0.6% fee for majority of the assets.
      * @param deadline Unix timestamp after which the transaction will revert.
      */
     function rebalance(uint32 deadline) external onlyOwner {
         require(_strategyTokenCount > 0, "Strategy hasn't been set");
 
-        uint8[] memory percentageArray = new uint8[](_strategyTokenCount);
+        // Get each tokens worth and the total worth in ETH
+        uint256 totalWorthInEth;
+        uint256[] memory tokensWorthInEth = new uint256[](_strategyTokenCount);
+
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
-            percentageArray[i] += _tokenPercentage[_strategyTokens[i]];
+            uint256 tokenWorth = _getEthAmountByTokenAmount(IERC20(_strategyTokens[i]).balanceOf(address(this)), _strategyTokens[i], true);
+            totalWorthInEth = totalWorthInEth.add(tokenWorth);
+            tokensWorthInEth[i] = tokenWorth;
+        }
+
+        uint8[] memory percentageArray = new uint8[](_strategyTokenCount); // Get percentages for event param
+        uint256 totalInEthToConvert = 0; // Get total token worth in ETH needed to be converted
+        uint256 totalEth = 0; // Get total token worth in ETH needed to be converted
+        uint256[] memory tokenInEthNeeded = new uint256[](_strategyTokenCount); // Get token worth need to be filled
+
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            percentageArray[i] = _tokenPercentage[_strategyTokens[i]];
+
+            uint256 tokenShouldWorth = totalWorthInEth.mul(_tokenPercentage[_strategyTokens[i]]).div(100);
+
+            if(tokensWorthInEth[i] <= tokenShouldWorth) {
+                // If token worth less than should be, calculate the diff and store as needed
+                tokenInEthNeeded[i] = tokenShouldWorth.sub(tokensWorthInEth[i]);
+                totalInEthToConvert = totalInEthToConvert.add(tokenInEthNeeded[i]);
+            } else {
+                tokenInEthNeeded[i] = 0;
+
+                // If token worth more than should be, convert the overflowed amount to ETH
+                uint256 tokenInEthOverflowed = tokensWorthInEth[i].sub(tokenShouldWorth);
+                uint256 tokensToConvert = _getTokenAmountByEthAmount(tokenInEthOverflowed, _strategyTokens[i], true);
+                uint256 ethConverted = _convertTokenToEth(tokensToConvert, _strategyTokens[i], deadline);
+                totalEth.add(ethConverted);
+            }
+            // Need the total value to help calculate how to distributed the converted ETH
+        }
+
+        // Distribute newly converted ETH by portion of each token to be converted to, and convert to that token needed.
+        // Note: reason is totalEthConverted comes from a conversion, which is a smaller number due to uniswap fee
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            uint256 ethToConvert = totalEth.mul(tokenInEthNeeded[i]).div(totalInEthToConvert);
+            _convertEthToToken(ethToConvert, _strategyTokens[i], deadline);
         }
 
         emit Rebalance(_strategyTokens, percentageArray);
-
-        uint256 ethConverted = _convertStrategyTokensToEth(totalTokenStored(), deadline);
-        _convertEthToStrategyTokens(ethConverted, deadline);
     }
 
     /**
@@ -278,42 +315,54 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     }
 
     /**
-     * @dev Get the worth in a token of a certain amount of ETH.
-     * @param _amount Amount of ETH to convert.
-     * @param _tokenAddress Address of the token to convert to.
+     * @dev Get ETH worth of a certain amount of a token.
+     * @param _amount Amount of token to convert.
+     * @param _fromAddress Address of token to convert from.
+     * @param _toAddress Address of token to convert to.
+     * @param excludeFees If uniswap fees is considered.
      */
-    function _getTokenAmountByEthAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
+    function _getAAmountByBAmount(uint256 _amount, address _fromAddress, address _toAddress, bool excludeFees) private view returns (uint256) {
         address[] memory path = new address[](2);
-        path[0] = uniswapRouter.WETH();
-        path[1] = _tokenAddress;
+        path[0] = _fromAddress;
+        path[1] = _toAddress;
 
         if (path[0] == path[1] || _amount == 0) {
             return _amount;
         }
-        return uniswapRouter.getAmountsOut(_amount, path)[1];
+        uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
+        if(excludeFees) {
+            return amountOut.mul(997).div(1000);
+        } else {
+            return amountOut;
+        }
+    }
+
+    /**
+     * @dev Get the worth in a token of a certain amount of ETH.
+     * @param _amount Amount of ETH to convert.
+     * @param _tokenAddress Address of the token to convert to.
+     * @param excludeFees If uniswap fees is considered.
+     */
+    function _getTokenAmountByEthAmount(uint256 _amount, address _tokenAddress, bool excludeFees) private view returns (uint256) {
+        return _getAAmountByBAmount(_amount, uniswapRouter.WETH(), _tokenAddress, excludeFees);
     }
 
     /**
      * @dev Get ETH worth of a certain amount of a token.
      * @param _amount Amount of token to convert.
      * @param _tokenAddress Address of token to convert from.
+     * @param excludeFees If uniswap fees is considered.
      */
-    function _getEthAmountByTokenAmount(uint256 _amount, address _tokenAddress) private view returns (uint256) {
-        address[] memory path = new address[](2);
-        path[0] = _tokenAddress;
-        path[1] = uniswapRouter.WETH();
-
-        if (path[0] == path[1] || _amount == 0) {
-            return _amount;
-        }
-        return uniswapRouter.getAmountsOut(_amount, path)[1];
+    function _getEthAmountByTokenAmount(uint256 _amount, address _tokenAddress, bool excludeFees) private view returns (uint256) {
+        return _getAAmountByBAmount(_amount, _tokenAddress, uniswapRouter.WETH(), excludeFees);
     }
 
     /**
      * @dev Get ETH worth of an array of strategy tokens.
      * @param strategyTokensBalance_ Array amounts of strategy tokens to convert.
+     * @param excludeFees If uniswap fees is considered.
      */
-    function _getEthAmountByStrategyTokensAmount(uint256[] memory strategyTokensBalance_) private view returns (uint256) {
+    function _getEthAmountByStrategyTokensAmount(uint256[] memory strategyTokensBalance_, bool excludeFees) private view returns (uint256) {
         uint256 amountOut;
         address[] memory path = new address[](2);
         path[1] = uniswapRouter.WETH();
@@ -322,7 +371,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
             address tokenAddress = _strategyTokens[i];
             path[0] = tokenAddress;
             uint256 tokenAmount = strategyTokensBalance_[i];
-            uint256 tokenAmountInEth = _getEthAmountByTokenAmount(tokenAmount, tokenAddress);
+            uint256 tokenAmountInEth = _getEthAmountByTokenAmount(tokenAmount, tokenAddress, excludeFees);
 
             amountOut = amountOut.add(tokenAmountInEth);
         }

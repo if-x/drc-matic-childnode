@@ -5,9 +5,10 @@
     "target": "ES2018",
     "strict": true,
     "esModuleInterop": true,
+    "allowJs": true,
     "types": ["@types/node", "@types/chai", "@types/mocha"],
     "typeRoots": ["./node_modules/@types", "./types"]
   },
-  "include": ["**/*.ts", "migrations/1_initial_migration.js"],
+  "include": ["**/*.ts", "migrations-ts/1_initial_migration.ts"],
   "exclude": ["node_modules", "build", "cache", "artifacts"]
 }

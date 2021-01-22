@@ -8,10 +8,12 @@
   },
   "scripts": {
     "compile": "truffle compile",
+    "etherscan-verify:ropsten": "truffle run verify DigitalReserve --network ropsten",
     "generate-types": "typechain --target=truffle-v5 'build/contracts/*.json'",
+    "migrate:ropsten": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate --network ropsten",
     "postinstall": "yarn compile && yarn generate-types",
     "prettier": "prettier --write 'contracts/**/*.sol'",
-    "test": "truffle test --network ropsten"
+    "test:ropsten": "truffle test --network ropsten"
   },
   "author": "drc",
   "license": "ISC",
@@ -28,6 +30,7 @@
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.3",
     "truffle": "^5.1.62",
+    "truffle-plugin-verify": "^0.5.4",
     "ts-node": "^9.1.1",
     "typechain": "^4.0.1",
     "typescript": "^4.1.3"
