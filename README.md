@@ -77,7 +77,7 @@ The percentage allocations will be used in the deposit process and rebalancing p
 Once the portfolio assets and their allocations are set, they are not expected to be changed except for the following possible conditions:
 - One of the underlying asset has a better tokenized version
 - One of the tokenized asset has a potential security issue
-- The market volatility of a certain asset is harming the stability of the vault that DRC holders and DR-POD holders have voted to change the allocations.
+- The performance and market volatility of a certain asset is harming the stability of the vault that DRC holders and DR-POD holders have voted to change the allocations.
 
 When changing strategy, the contract will convert all the current portfolio assets to WETH. Then the WETH will be divided by the new portfolio assets' allocation percentages, and be converted to portfolio assets.
 
