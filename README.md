@@ -87,7 +87,7 @@ Set and change strategy function is only executable by contract owner - [the DRC
 
 Rebalancing is the process of realigning the weighting of a portfolio of assets to the strategy allocation that is defined.
 
-When rebalancing, the contract will convert all the current portfolio assets to WETH. Then the WETH will be divided by the portfolio assets' allocation percentages, and be converted to portfolio assets.
+When rebalancing, the contract will check each of the portfolio asset's worth in ETH, and the vault's total worth in ETH. Based on the designed portfolio allocations, the contract will calculate how much each asset should be worth. Some of the assets' worth might exceed what it should be, whilst some would be below what it should be. The contract then will convert the overflowed parts of the assets to ETH. And then further swap the ETH to make up for the assets that is below the designed percentage value.
 
 Rebalancing is only executable by contract owner - [the DRC Foundation Fund Multi-sig Wallet](#digital-reserve-contract-owner).
 
