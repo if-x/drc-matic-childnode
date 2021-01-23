@@ -98,7 +98,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-getUserVaultInDrc}.
      */
     function getUserVaultInDrc(address user) public view override returns (uint256, uint256, uint256) {
-        uint256 userVaultWorthInEth = balanceOf(user).mul(getProofOfDepositPrice()).div(1e18);
+        uint256 userVaultWorthInEth = balanceOf(user).mul(getProofOfDepositPrice()).div(1e18).mul(997).div(1000);
 
         uint256 fees = userVaultWorthInEth.mul(_feePercentage).div(100);
         uint256 drcAmount = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress, false);
@@ -122,6 +122,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-depositDrc}.
      */
     function depositDrc(uint256 drcAmount, uint32 deadline) external override {
+        require(_strategyTokenCount >= 1, "Strategy hasn't been set.");
         require(depositEnabled, "Deposit is disabled.");
         require(IERC20(drcAddress).allowance(msg.sender, address(this)) >= drcAmount, "Contract is not allowed to spend user's DRC.");
         require(IERC20(drcAddress).balanceOf(msg.sender) >= drcAmount, "Attempted to deposit more than balance.");
@@ -280,7 +281,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
                 uint256 tokenInEthOverflowed = tokensWorthInEth[i].sub(tokenShouldWorth);
                 uint256 tokensToConvert = _getTokenAmountByEthAmount(tokenInEthOverflowed, _strategyTokens[i], true);
                 uint256 ethConverted = _convertTokenToEth(tokensToConvert, _strategyTokens[i], deadline);
-                totalEth.add(ethConverted);
+                totalEth = totalEth.add(ethConverted);
             }
             // Need the total value to help calculate how to distributed the converted ETH
         }
@@ -331,7 +332,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         }
         uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
         if(excludeFees) {
-            return amountOut.mul(997).div(1000);
+            return amountOut.mul(1000).div(997);
         } else {
             return amountOut;
         }

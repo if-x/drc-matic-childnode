@@ -8,10 +8,9 @@ Transaction cost
 
 Deposit:
 Transaction cost
-474313
-485236
-482029
-506638
+621830
+641716
+656716
 
 Withdraw:
 Transaction cost
@@ -26,3 +25,45 @@ Withdraw percentage:
 
 Rebalance
 445797
+262374
+
+Before Rebalance:
+2911269195, 14565118524224086446, 728361375167
+
+Unit price before price impact:
+7288739590681
+
+Unit price after price impact:
+7973821679874
+
+Unit price after Rebalance:
+7971359857957
+
+After Rebalance:
+2579031876, 15925384023024781593, 796395995751
+
+=====
+
+Before Rebalance:
+2358019149, 14568403290007124790, 728526358142
+
+Unit price before price impact:
+7290399647328
+
+Unit price after price impact:
+6736976136553
+
+Unit price after Rebalance:
+6734987416982
+
+After Rebalance:
+2687324325, 13462839598097316360, 673232062714
+
+Unit price after price impact:
+7915767658060
+
+Unit price after Rebalance:
+7911531969847
+
+After Rebalance:
+2196840650, 15803296929733648271, 790290439024

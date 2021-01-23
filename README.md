@@ -255,16 +255,13 @@ Emit each time a withdraw action happened.
 
 ## Testing in Ropsten testnet
 
-For testing on Ropsten network
+For test contract on Ropsten network
 
-Paste this in constructor
-"0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D","0x6D38D09eb9705A5Fb1b8922eA80ea89d438159C7"
+Set strategy:
+[0x0B6D10102bbB04a0CA2Dc49d1b38bD9A788832FD,0x478640c8D01CAc92Ffcd4a15EaC1408Be52BA47A,0x87c00648150d89651FB6C5C5993338DCfcA3Ff7B],
+[40,40,20],3,"1610373999"
 
 Approve the contract with Drc before depositing
-
-Paste this for changing strategy
-["0x0B6D10102bbB04a0CA2Dc49d1b38bD9A788832FD","0x8ee9335eD219Fb26B57AE7038047D59aBe702365","0x87c00648150d89651FB6C5C5993338DCfcA3Ff7B"],
-[40,40,20],3,"1610373999"
 
 This is the DRC contract
 0x6D38D09eb9705A5Fb1b8922eA80ea89d438159C7
@@ -280,3 +277,6 @@ WBTC
 
 USDC
 0x87c00648150d89651FB6C5C5993338DCfcA3Ff7B
+
+Deployed contract:
+https://ropsten.etherscan.io/address/0x187659CAC5A056F692F055324aCd1759E8544a7a#contracts
