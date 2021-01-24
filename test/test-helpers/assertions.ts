@@ -1,6 +1,10 @@
 import { AssertionError } from "chai";
 
-export const assertRevert = async (asyncFn: Promise<any>, reason: string, message: string) => {
+export const assertRevert = async (
+  asyncFn: Promise<any>,
+  reason: string,
+  message: string
+) => {
   try {
     await asyncFn;
   } catch (error) {
@@ -9,8 +13,8 @@ export const assertRevert = async (asyncFn: Promise<any>, reason: string, messag
         `${message}. Expected to fail with 'revert', but failed with: ${error}`
       );
     }
-    
-    if(!error.message.includes(reason)) {
+
+    if (!error.message.includes(reason)) {
       throw new AssertionError(
         `${message}. Expected reason to be '${reason}', but failed with: ${error}`
       );
@@ -18,5 +22,5 @@ export const assertRevert = async (asyncFn: Promise<any>, reason: string, messag
     return;
   }
 
-  throw new AssertionError(`${message}. Did not fail`);  
+  throw new AssertionError(`${message}. Did not fail`);
 };

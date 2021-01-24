@@ -11,6 +11,8 @@
     "compile-ts": "tsc -p ./tsconfig.migrate.json --outDir ./migrations",
     "etherscan-verify:ropsten": "truffle run verify DigitalReserve --network ropsten",
     "generate-types": "typechain --target=truffle-v5 'build/contracts/*.json'",
+    "lint": "eslint --ignore-path .gitignore . --ext ts --ext tsx --ext js --ext jsx",
+    "lint:fix": "npm run lint -- --fix",
     "migrate:dev": "yarn compile-ts && truffle migrate",
     "migrate:ropsten": "yarn compile-ts && truffle migrate --network ropsten",
     "postinstall": "yarn compile && yarn generate-types",
@@ -25,7 +27,8 @@
     "@openzeppelin/contracts": "^3.3.0",
     "@uniswap/lib": "^4.0.1-alpha",
     "@uniswap/v2-core": "^1.0.1",
-    "@uniswap/v2-periphery": "^1.1.0-beta.0"
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "ganache-cli": "^6.12.2"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.2.1",
@@ -33,6 +36,12 @@
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
     "@types/node": "^14.14.21",
+    "@typescript-eslint/eslint-plugin": "^4.11.1",
+    "@typescript-eslint/parser": "^4.11.1",
+    "eslint": "^7.16.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.0",
     "chai": "^4.2.0",
     "dotenv": "^8.2.0",
     "prettier": "^2.2.1",

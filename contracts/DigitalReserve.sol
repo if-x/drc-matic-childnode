@@ -312,8 +312,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         uint256 fees = ethConverted.mul(_feePercentage).div(100);
 
         uint256 drcAmount = _convertEthToToken(ethConverted.sub(fees), drcAddress, deadline);
+
         SafeERC20.safeTransfer(IERC20(drcAddress), msg.sender, drcAmount);
         SafeERC20.safeTransfer(IERC20(uniswapRouter.WETH()), owner(), fees);
+
         emit Withdraw(msg.sender, drcAmount, fees, podToBurn, totalSupply());
     }
 
@@ -332,7 +334,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         if (path[0] == path[1] || _amount == 0) {
             return _amount;
         }
+
         uint256 amountOut = uniswapRouter.getAmountsOut(_amount, path)[1];
+        
         if(excludeFees) {
             return amountOut.mul(1000).div(997);
         } else {
