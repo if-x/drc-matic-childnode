@@ -2,15 +2,6 @@ const DigitalReserve = artifacts.require("DigitalReserve");
 
 type Network = "development" | "ropsten" | "mainnet";
 
-// Dev:
-// Deploy all the tokens: WETH, DRC, WBTC, PAXG, USDC
-// Deploy factory
-// Deploy router
-
-// Approve DRC, WBTC, PAXG, USDC
-// Provide liquidity DRC, WBTC, PAXG, USDC
-// Buy DRC
-
 module.exports = async (
   deployer: Truffle.Deployer,
   network: Network,

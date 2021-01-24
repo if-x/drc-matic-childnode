@@ -8,13 +8,16 @@
   },
   "scripts": {
     "compile": "truffle compile",
+    "compile-ts": "truffle tsc -p ./tsconfig.migrate.json --outDir ./migrations",
     "etherscan-verify:ropsten": "truffle run verify DigitalReserve --network ropsten",
     "generate-types": "typechain --target=truffle-v5 'build/contracts/*.json'",
-    "migrate:ropsten": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate --network ropsten",
+    "migrate:dev": "yarn compile-ts && truffle migrate",
+    "migrate:ropsten": "yarn compile-ts && truffle migrate --network ropsten",
     "postinstall": "yarn compile && yarn generate-types",
     "prettier": "prettier --write 'contracts/**/*.sol'",
-    "test:dev": "truffle test test/digital-reserve.test.ts",
-    "test:ropsten": "truffle test test/e2e-digital-reserve.test.ts --network ropsten"
+    "start-server": "node server.js",
+    "test": "yarn compile-ts && truffle test",
+    "test:ropsten": "yarn test --network ropsten"
   },
   "author": "drc",
   "license": "ISC",

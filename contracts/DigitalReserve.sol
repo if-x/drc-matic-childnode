@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./Interfaces/Uniswap/IUniswapV2Router02.sol";
-import "./Interfaces/IDigitalReserve.sol";
+import "./interfaces/Uniswap/IUniswapV2Router02.sol";
+import "./interfaces/IDigitalReserve.sol";
 
 /**
  * @dev Implementation of Digital Reserve contract.
