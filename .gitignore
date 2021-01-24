@@ -108,6 +108,7 @@ dist
 
 # truffle
 build/
+migrations/
 
 # typechain
 types/
