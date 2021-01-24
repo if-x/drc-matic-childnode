@@ -101,10 +101,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         uint256 userVaultWorthInEth = balanceOf(user).mul(getProofOfDepositPrice()).div(1e18).mul(997).div(1000);
 
         uint256 fees = userVaultWorthInEth.mul(_feePercentage).div(100);
-        uint256 drcAmount = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress, false);
+        uint256 drcAmountBeforeFees = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress, true);
         uint256 drcAmountExcludeFees = _getTokenAmountByEthAmount(userVaultWorthInEth.sub(fees), drcAddress, false);
 
-        return (drcAmount, drcAmountExcludeFees, fees);
+        return (drcAmountBeforeFees, drcAmountExcludeFees, fees);
     }
 
     /**
@@ -212,14 +212,14 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         uint32 deadline
     ) external onlyOwner {
         require(strategyTokenCount_ >= 1, "Setting strategy to 0 tokens.");
-        require(strategyTokens_.length == strategyTokenCount_, "Token count doesn't match tokens length");
-        require(tokenPercentage_.length == strategyTokenCount_, "Token count doesn't match token percentages length");
+        require(strategyTokens_.length == strategyTokenCount_, "Token count doesn't match tokens length.");
+        require(tokenPercentage_.length == strategyTokenCount_, "Token count doesn't match token percentages length.");
 
         uint8 totalPercentage = 0;
         for (uint8 i = 0; i < strategyTokenCount_; i++) {
             totalPercentage += tokenPercentage_[i];
         }
-        require(totalPercentage == 100, "Total token percentage exceeded 100%.");
+        require(totalPercentage == 100, "Total token percentage is not 100%.");
 
         uint8[] memory oldPercentage = new uint8[](_strategyTokenCount);
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
@@ -262,7 +262,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
 
         uint8[] memory percentageArray = new uint8[](_strategyTokenCount); // Get percentages for event param
         uint256 totalInEthToConvert = 0; // Get total token worth in ETH needed to be converted
-        uint256 totalEth = 0; // Get total token worth in ETH needed to be converted
+        uint256 totalEthConverted = 0; // Get total token worth in ETH needed to be converted
         uint256[] memory tokenInEthNeeded = new uint256[](_strategyTokenCount); // Get token worth need to be filled
 
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
@@ -281,15 +281,17 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
                 uint256 tokenInEthOverflowed = tokensWorthInEth[i].sub(tokenShouldWorth);
                 uint256 tokensToConvert = _getTokenAmountByEthAmount(tokenInEthOverflowed, _strategyTokens[i], true);
                 uint256 ethConverted = _convertTokenToEth(tokensToConvert, _strategyTokens[i], deadline);
-                totalEth = totalEth.add(ethConverted);
+                totalEthConverted = totalEthConverted.add(ethConverted);
             }
             // Need the total value to help calculate how to distributed the converted ETH
         }
 
         // Distribute newly converted ETH by portion of each token to be converted to, and convert to that token needed.
-        // Note: reason is totalEthConverted comes from a conversion, which is a smaller number due to uniswap fee
+        // Note: totalEthConverted would be a bit smaller than totalInEthToConvert due to Uniswap fee.
+        // Converting everything is another way of rebalancing, but Uniswap would take 0.6% fee on everything.
+        // In this method we reach the closest number with the lowest possible swapping fee.
         for (uint8 i = 0; i < _strategyTokenCount; i++) {
-            uint256 ethToConvert = totalEth.mul(tokenInEthNeeded[i]).div(totalInEthToConvert);
+            uint256 ethToConvert = totalEthConverted.mul(tokenInEthNeeded[i]).div(totalInEthToConvert);
             _convertEthToToken(ethToConvert, _strategyTokens[i], deadline);
         }
 

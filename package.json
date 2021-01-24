@@ -13,12 +13,16 @@
     "migrate:ropsten": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate --network ropsten",
     "postinstall": "yarn compile && yarn generate-types",
     "prettier": "prettier --write 'contracts/**/*.sol'",
-    "test:ropsten": "truffle test --network ropsten"
+    "test:dev": "truffle test test/digital-reserve.test.ts",
+    "test:ropsten": "truffle test test/e2e-digital-reserve.test.ts --network ropsten"
   },
   "author": "drc",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^3.3.0"
+    "@openzeppelin/contracts": "^3.3.0",
+    "@uniswap/lib": "^4.0.1-alpha",
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.2.1",
@@ -26,6 +30,7 @@
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
     "@types/node": "^14.14.21",
+    "chai": "^4.2.0",
     "dotenv": "^8.2.0",
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.3",
