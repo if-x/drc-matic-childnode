@@ -1,7 +1,7 @@
 {
-  "name": "dr",
+  "name": "digital-reserve",
   "version": "1.0.0",
-  "description": "",
+  "description": "Digital Reserve (DR) is an online platform for DRC token holders to get easy exposure to a basket of the most efficient store of value (SoV) assets.",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"
@@ -22,8 +22,8 @@
     "test": "yarn compile-ts && truffle test",
     "test:ropsten": "yarn test --network ropsten"
   },
-  "author": "drc",
-  "license": "ISC",
+  "author": "If.x",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@openzeppelin/contracts": "^3.3.0",
     "@uniswap/lib": "^4.0.1-alpha",
@@ -52,5 +52,9 @@
     "ts-node": "^9.1.1",
     "typechain": "^4.0.1",
     "typescript": "^4.1.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/if-x/digital-reserve"
   }
 }
