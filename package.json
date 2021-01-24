@@ -1,8 +1,14 @@
 {
   "name": "digital-reserve",
   "version": "1.0.0",
-  "description": "Digital Reserve (DR) is an online platform for DRC token holders to get easy exposure to a basket of the most efficient store of value (SoV) assets.",
+  "description": "Digital Reserve (DR) smart contract for DRC token holders to get easy exposure to a basket of store of value (SoV) assets.",
   "main": "truffle-config.js",
+  "keywords": [
+    "digital-reserve-currency",
+    "drc",
+    "store-of-value",
+    "sov"
+  ],
   "directories": {
     "test": "test"
   },
