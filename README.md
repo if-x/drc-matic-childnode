@@ -2,6 +2,33 @@
 
 Digital Reserve (DR) is an online platform where DRC token holders will be able to get easy exposure to a basket of the most efficient store of value (SoV) assets to preserve their capital and hedge inflation risks.
 
+## Development
+
+Compile contract:
+```
+yarn compile
+```
+
+Migrate contract:
+```
+yarn migrate --network nerworkName
+```
+
+Verify on etherscan:
+```
+yarn etherscan-verify --network nerworkName
+```
+
+Start a dev server to run tests:
+```
+yarn start-server
+```
+
+Tests:
+```
+yarn test
+```
+
 ## How it works
 
 Digital Reserve contract converts user's DRC into a set of SoV assets using the Uniswap router, and hold these assets for it's users. When users initiate a withdrawal action, the contract converts a share of the vault, that the user is requesting, to DRC and sends it back to their wallet.
@@ -253,30 +280,3 @@ event Withdraw(address user, uint256 amount, uint256 fees, uint256 podBurned, ui
 
 Emit each time a withdraw action happened.
 
-## Testing in Ropsten testnet
-
-For test contract on Ropsten network
-
-Set strategy:
-[0x0B6D10102bbB04a0CA2Dc49d1b38bD9A788832FD,0x478640c8D01CAc92Ffcd4a15EaC1408Be52BA47A,0x87c00648150d89651FB6C5C5993338DCfcA3Ff7B],
-[40,40,20],3,"1610373999"
-
-Approve the contract with Drc before depositing
-
-This is the DRC contract
-0x6D38D09eb9705A5Fb1b8922eA80ea89d438159C7
-
-WETH
-0xc778417E063141139Fce010982780140Aa0cD5Ab
-
-PAXG
-0x478640c8D01CAc92Ffcd4a15EaC1408Be52BA47A
-
-WBTC
-0x0B6D10102bbB04a0CA2Dc49d1b38bD9A788832FD
-
-USDC
-0x87c00648150d89651FB6C5C5993338DCfcA3Ff7B
-
-Deployed contract:
-https://ropsten.etherscan.io/address/0x187659CAC5A056F692F055324aCd1759E8544a7a#contracts
