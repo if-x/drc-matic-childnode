@@ -71,13 +71,13 @@ Users can enter an amount of DRC that they want to withdraw from DR. Note: the t
 
 The contract will check the user's total assets value in DRC, and find out the fraction of their total they are withdrawing.
 
-That fraction of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD will be burned and proceed the withdrawal of the DR-POD amount. Details of DR-POD withdrawal are [here](#internal-function-withdraw-by-dr-pod-amount).
+That fraction of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD that will be burned and proceed the withdrawal of the DR-POD amount. Details of DR-POD withdrawal are [here](#internal-function-withdraw-by-dr-pod-amount).
 
 ### Method 2: Withdraw a certain percentage of user's holding
 
-User can also enter a percentage of their holding they want to withdraw from the DR vault.
+Users can also enter a percentage of their holding they want to withdraw from the DR vault.
 
-The percentage of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD will be burned and proceed the withdrawal of the DR-POD amount. Details of DR-POD withdrawal are [here](#internal-function-withdraw-by-dr-pod-amount).
+The percentage of their DR-POD holding will then be withdrawn. The contract will calculate the amount of DR-POD that will be burned and proceed the withdrawal of the DR-POD amount. Details of DR-POD withdrawal are [here](#internal-function-withdraw-by-dr-pod-amount).
 
 ### Internal function: Withdraw by DR-POD amount
 
@@ -132,11 +132,11 @@ Users' DR-POD are burned when they withdraw DRC from the vault. When withdrawing
 
 The Proof of Deposit (DR-POD) matches the ERC20 token standard. It has 18 decimals. The following actions are supported:
 - Transfer DR-POD to other addresses
-- Grant other addresses to transfer your DR-POD
+- Approve other addresses to transfer your DR-POD
 
 **Note**: transfer DR-POD to another address means that address can withdraw DRC from the DR. It is a real representation of your holding. Don't transfer or approve spending to any address you don't trust.
 
-The Proof of Deposit's net unit worth is publicly available through function `getProofOfDepositPrice()`. Trading action is not encouraged by DRC Foundation.
+The Proof of Deposit's net unit worth is publicly available through function `getProofOfDepositPrice()`. Trading action is not encouraged by the DRC Foundation.
 
 ## Digital Reserve contract owner
 
@@ -212,7 +212,7 @@ function getUserVaultInDrc(address user, uint8 percentage) external view returns
 
 Returns how much user's vault share in DRC amount. The first output is total worth in DRC, second one is total DRC could withdraw (exclude fees), and last output is fees in wei.
 
-#### getUserVaultInDrc
+#### getProofOfDepositPrice
 
 ```JS
 function getProofOfDepositPrice() external view returns (uint256);
