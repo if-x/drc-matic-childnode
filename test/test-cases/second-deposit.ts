@@ -1,7 +1,7 @@
 import { Contract } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
 import { DigitalReserveInstance } from "../../types/truffle-contracts";
-import { getUnitTimeAfterMins } from "../../utils/timestamp";
+import { getUnixTimeAfterMins } from "../../utils/timestamp";
 import IERC20 from "../../build/contracts/IERC20.json";
 import IUniswapV2Router02 from "../../build/contracts/IUniswapV2Router02.json";
 import { Network, getContractAddress } from "../../utils/contract-by-network";
@@ -47,7 +47,7 @@ export const testSecondDeposit = async (accounts: Truffle.Accounts) => {
 
     const depositResult = await instance.depositDrc(
       1000000,
-      getUnitTimeAfterMins(10)
+      getUnixTimeAfterMins(10)
     );
 
     const depositLog = depositResult.logs.find(

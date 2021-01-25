@@ -98,13 +98,16 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-getUserVaultInDrc}.
      */
     function getUserVaultInDrc(address user) public view override returns (uint256, uint256, uint256) {
-        uint256 userVaultWorthInEth = balanceOf(user).mul(getProofOfDepositPrice()).div(1e18).mul(997).div(1000);
+        uint256[] memory userStrategyTokens = _getStrateTokensByPodAmount(balanceOf(user));
+        uint256 userVaultWorthInEth = _getEthAmountByStrategyTokensAmount(userStrategyTokens, true);
+        uint256 userVaultWorthInEthAfterSwap = _getEthAmountByStrategyTokensAmount(userStrategyTokens, false);
 
-        uint256 fees = userVaultWorthInEth.mul(_feePercentage).div(100);
         uint256 drcAmountBeforeFees = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress, true);
-        uint256 drcAmountExcludeFees = _getTokenAmountByEthAmount(userVaultWorthInEth.sub(fees), drcAddress, false);
 
-        return (drcAmountBeforeFees, drcAmountExcludeFees, fees);
+        uint256 fees = userVaultWorthInEthAfterSwap.mul(_feePercentage).div(100);
+        uint256 drcAmountAfterFees = _getTokenAmountByEthAmount(userVaultWorthInEthAfterSwap.sub(fees), drcAddress, false);
+
+        return (drcAmountBeforeFees, drcAmountAfterFees, fees);
     }
 
     /**
@@ -155,11 +158,21 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     function withdrawDrc(uint256 drcAmount, uint32 deadline) external override {
         require(withdrawalEnabled, "Withdraw is disabled.");
 
-        (, uint256 userVaultInDrc, ) = getUserVaultInDrc(msg.sender);
-        require(userVaultInDrc >= drcAmount, "Attempt to withdraw more than user's holding.");
+        address[] memory path = new address[](2);
+        path[0] = uniswapRouter.WETH();
+        path[1] = drcAddress;
 
-        uint256 amountFraction = drcAmount.mul(1e10).div(userVaultInDrc);
+        uint256 ethNeeded = uniswapRouter.getAmountsIn(drcAmount, path)[0];
+        uint256 ethNeededPlusFee = ethNeeded.mul(100).div(100 - _feePercentage);
+
+        uint256[] memory userStrategyTokens = _getStrateTokensByPodAmount(balanceOf(msg.sender));
+        uint256 userVaultWorthInEth = _getEthAmountByStrategyTokensAmount(userStrategyTokens, false);
+
+        require(userVaultWorthInEth >= ethNeededPlusFee, "Attempt to withdraw more than user's holding.");
+
+        uint256 amountFraction = ethNeededPlusFee.mul(1e10).div(userVaultWorthInEth);
         uint256 podToBurn = balanceOf(msg.sender).mul(amountFraction).div(1e10);
+
         _withdrawProofOfDeposit(podToBurn, deadline);
     }
 

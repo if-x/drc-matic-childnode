@@ -2,7 +2,7 @@ import { getContractAddress } from "../utils/contract-by-network";
 
 const DigitalReserve = artifacts.require("DigitalReserve");
 
-type Network = "development" | "ropsten" | "mainnet";
+type Network = "development" | "ropsten" | "main";
 
 module.exports = async (
   deployer: Truffle.Deployer,

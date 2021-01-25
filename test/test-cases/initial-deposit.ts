@@ -2,11 +2,14 @@ import { Contract } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
 import { DigitalReserveInstance } from "../../types/truffle-contracts";
 import { assertRevert } from "../test-helpers/assertions";
-import { getUnitTimeAfterMins } from "../../utils/timestamp";
+import { getUnixTimeAfterMins } from "../../utils/timestamp";
 import IERC20 from "../../build/contracts/IERC20.json";
 import IUniswapV2Router02 from "../../build/contracts/IUniswapV2Router02.json";
 import { Network, getContractAddress } from "../../utils/contract-by-network";
-import { Deposit } from "../../types/truffle-contracts/DigitalReserve";
+import {
+  Deposit,
+  Transfer,
+} from "../../types/truffle-contracts/DigitalReserve";
 import { getTokensWorth } from "../test-helpers/get-tokens-worth";
 
 const DigitalReserve = artifacts.require("DigitalReserve");
@@ -35,7 +38,7 @@ export const testInitialDeposit = async (accounts: Truffle.Accounts) => {
 
   it("Should not able to deposit before deposit is enabled", async () => {
     await assertRevert(
-      instance.depositDrc(1000, getUnitTimeAfterMins(10)),
+      instance.depositDrc(1000, getUnixTimeAfterMins(10)),
       "Deposit is disabled.",
       "Can't deposit DRC before deposit is enabled"
     );
@@ -43,6 +46,9 @@ export const testInitialDeposit = async (accounts: Truffle.Accounts) => {
 
   it("Should be able to deposit 1000 DRC and mint 1 DR-POD", async () => {
     await instance.changeDepositStatus(true);
+
+    const userBalance = await drcContract.methods.balanceOf(accounts[0]).call();
+    console.log("DRC balance", userBalance, accounts[0]);
 
     await drcContract.methods
       .approve(instance.address, 1000)
@@ -56,8 +62,14 @@ export const testInitialDeposit = async (accounts: Truffle.Accounts) => {
 
     const deposit1000Result = await instance.depositDrc(
       1000,
-      getUnitTimeAfterMins(10)
+      getUnixTimeAfterMins(10)
     );
+
+    const transferLog = deposit1000Result.logs.find(
+      (log) => log.event === "Transfer"
+    ) as Transfer | undefined;
+
+    assert.exists(transferLog);
 
     const depositLog = deposit1000Result.logs.find(
       (log) => log.event === "Deposit"
@@ -82,6 +94,12 @@ export const testInitialDeposit = async (accounts: Truffle.Accounts) => {
 
     const userBalance = await instance.balanceOf(accounts[0]);
     assert.equal(Number(web3.utils.fromWei(userBalance)), 1);
+  });
+
+  it("Should have correct DRC value", async () => {
+    const valueInDrc = await instance.getUserVaultInDrc(accounts[0]);
+    assert.equal(valueInDrc[0].toNumber(), 993);
+    assert.equal(valueInDrc[1].toNumber(), 978);
   });
 
   it("Should match designed percentage", async () => {

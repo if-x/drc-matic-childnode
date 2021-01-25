@@ -2,7 +2,7 @@ import { DigitalReserveInstance } from "../../types/truffle-contracts";
 import { StrategyChange } from "../../types/truffle-contracts/DigitalReserve";
 import { assertRevert } from "../test-helpers/assertions";
 import { Network, getContractAddress } from "../../utils/contract-by-network";
-import { getUnitTimeAfterMins } from "../../utils/timestamp";
+import { getUnixTimeAfterMins } from "../../utils/timestamp";
 
 const DigitalReserve = artifacts.require("DigitalReserve");
 
@@ -17,7 +17,7 @@ export const testSetStrategy = async () => {
 
   it("Should revert if setting to 0 tokens", async () => {
     await assertRevert(
-      instance.changeStrategy([], [], 0, getUnitTimeAfterMins(10)),
+      instance.changeStrategy([], [], 0, getUnixTimeAfterMins(10)),
       "Setting strategy to 0 tokens.",
       "Can't set strategy to empty array"
     );
@@ -32,7 +32,7 @@ export const testSetStrategy = async () => {
         ],
         [60, 40],
         3,
-        getUnitTimeAfterMins(10)
+        getUnixTimeAfterMins(10)
       ),
       "Token count doesn't match tokens length.",
       "Can't set strategy count to wrong length"
@@ -48,7 +48,7 @@ export const testSetStrategy = async () => {
         ],
         [50, 40],
         2,
-        getUnitTimeAfterMins(10)
+        getUnixTimeAfterMins(10)
       ),
       "Total token percentage is not 100%.",
       "Wrong percentage"
@@ -63,7 +63,7 @@ export const testSetStrategy = async () => {
       ],
       [50, 50],
       2,
-      getUnitTimeAfterMins(10)
+      getUnixTimeAfterMins(10)
     );
 
     const setStrategyLog = setStrategyResult.logs.find(
@@ -95,7 +95,7 @@ export const testSetStrategy = async () => {
       ],
       [40, 40, 20],
       3,
-      getUnitTimeAfterMins(10)
+      getUnixTimeAfterMins(10)
     );
 
     const changeStrategyLog = changeStrategyResult.logs.find(

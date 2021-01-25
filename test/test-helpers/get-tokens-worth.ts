@@ -43,3 +43,39 @@ export const getTokensWorth = async (
     tokenPercentage: [percentage1, percentage2, percentage3],
   };
 };
+
+export const getTokensWorthSet2 = async (
+  instance: DigitalReserveInstance,
+  uniRouter: Contract,
+  newtworkType: Network
+) => {
+  const tokens = await instance.totalTokenStored();
+
+  const wethAddress = await uniRouter.methods.WETH().call();
+  const amount1 = await uniRouter.methods
+    .getAmountsIn(tokens[0].toString(), [
+      wethAddress,
+      getContractAddress("wbtc", newtworkType),
+    ])
+    .call();
+  const amount2 = await uniRouter.methods
+    .getAmountsIn(tokens[1].toString(), [
+      wethAddress,
+      getContractAddress("paxg", newtworkType),
+    ])
+    .call();
+
+  const tokenWorth1 = Number(web3.utils.toWei(amount1[0]));
+  const tokenWorth2 = Number(web3.utils.toWei(amount2[0]));
+  const tokenWorth3 = Number(web3.utils.toWei(tokens[2]));
+  const total = tokenWorth1 + tokenWorth2 + tokenWorth3;
+
+  const percentage1 = Math.round((tokenWorth1 / total) * 100);
+  const percentage2 = Math.round((tokenWorth2 / total) * 100);
+  const percentage3 = Math.round((tokenWorth3 / total) * 100);
+
+  return {
+    tokenWorth: [tokenWorth1, tokenWorth2, tokenWorth3],
+    tokenPercentage: [percentage1, percentage2, percentage3],
+  };
+};
