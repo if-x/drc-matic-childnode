@@ -29,7 +29,7 @@
     "test:ropsten": "yarn test --network ropsten"
   },
   "author": "If.x",
-  "license": "AGPL-3.0-or-later",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "@openzeppelin/contracts": "^3.3.0",
     "@uniswap/lib": "^4.0.1-alpha",
