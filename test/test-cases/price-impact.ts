@@ -31,7 +31,7 @@ export const testPriceImpact = async (accounts: Truffle.Accounts) => {
     );
     prevPercentages = (await getTokensWorth(instance, uniRouter, newtworkType))
       .tokenPercentage;
-    const valueInDrc = await instance.getUserVaultInDrc(accounts[0]);
+    const valueInDrc = await instance.getUserVaultInDrc(accounts[0], 100);
     prevUserBalanceInDRC = valueInDrc[0].toNumber();
 
     const wethAddress = await uniRouter.methods.WETH().call();
@@ -72,13 +72,13 @@ export const testPriceImpact = async (accounts: Truffle.Accounts) => {
     assert.isBelow(newPercentages[1], prevPercentages[1]);
     assert.isBelow(newPercentages[2], prevPercentages[2]);
 
-    const valueInDrc = await instance.getUserVaultInDrc(accounts[0]);
+    const valueInDrc = await instance.getUserVaultInDrc(accounts[0], 100);
     const newUserBalanceInDRC = valueInDrc[0].toNumber();
     assert.isAbove(newUserBalanceInDRC, prevUserBalanceInDRC);
   });
 
   it("Should have more DRC can withdraw after price impact", async () => {
-    const valueInDrc = await instance.getUserVaultInDrc(accounts[0]);
+    const valueInDrc = await instance.getUserVaultInDrc(accounts[0], 100);
     const newUserBalanceInDRC = valueInDrc[0].toNumber();
     assert.isAbove(newUserBalanceInDRC, prevUserBalanceInDRC);
   });

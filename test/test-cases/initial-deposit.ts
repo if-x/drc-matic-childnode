@@ -96,7 +96,7 @@ export const testInitialDeposit = async (accounts: Truffle.Accounts) => {
   });
 
   it("Should have correct DRC value", async () => {
-    const valueInDrc = await instance.getUserVaultInDrc(accounts[0]);
+    const valueInDrc = await instance.getUserVaultInDrc(accounts[0], 100);
     assert.equal(valueInDrc[0].toNumber(), 993);
     assert.equal(valueInDrc[1].toNumber(), 978);
   });

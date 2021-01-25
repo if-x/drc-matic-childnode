@@ -207,7 +207,7 @@ Returns total strategy tokens stored.
 #### getUserVaultInDrc
 
 ```JS
-function getUserVaultInDrc(address user) external view returns (uint256, uint256, uint256);
+function getUserVaultInDrc(address user, uint8 percentage) external view returns (uint256, uint256, uint256);
 ```
 
 Returns how much user's vault share in DRC amount. The first output is total worth in DRC, second one is total DRC could withdraw (exclude fees), and last output is fees in wei.
@@ -280,3 +280,5 @@ event Withdraw(address user, uint256 amount, uint256 fees, uint256 podBurned, ui
 
 Emit each time a withdraw action happened.
 
+## Last deployed contract on Ropsten:
+https://ropsten.etherscan.io/address/0x2Bc633b7C60eEb91eda57D01f00bd17a79f72A15#contracts

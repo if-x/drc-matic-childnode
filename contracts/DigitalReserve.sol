@@ -98,8 +98,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     /**
      * @dev See {IDigitalReserve-getUserVaultInDrc}.
      */
-    function getUserVaultInDrc(address user) public view override returns (uint256, uint256, uint256) {
-        uint256[] memory userStrategyTokens = _getStrategyTokensByPodAmount(balanceOf(user));
+    function getUserVaultInDrc(address user, uint8 percentage) public view override returns (uint256, uint256, uint256) {
+        uint256[] memory userStrategyTokens = _getStrategyTokensByPodAmount(balanceOf(user).mul(percentage).div(100));
         uint256 userVaultWorthInEth = _getEthAmountByStrategyTokensAmount(userStrategyTokens, true);
         uint256 userVaultWorthInEthAfterSwap = _getEthAmountByStrategyTokensAmount(userStrategyTokens, false);
 
