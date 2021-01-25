@@ -1,8 +1,6 @@
 const Migrations = artifacts.require("Migrations");
 
-module.exports = function (deployer, network, accounts) {
-  console.log(web3.eth.getBalance(accounts[1]));
-
+module.exports = function (deployer) {
   deployer.deploy(Migrations);
 } as Truffle.Migration;
 

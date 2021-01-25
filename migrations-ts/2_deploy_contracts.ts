@@ -7,7 +7,7 @@ type Network = "development" | "ropsten" | "main";
 module.exports = async (
   deployer: Truffle.Deployer,
   network: Network,
-  accounts: string[]
+  // accounts: string[]
 ) => {
   await deployer.deploy(
     DigitalReserve,
