@@ -180,13 +180,13 @@ function tokenPercentage(address tokenAddress) external view returns (uint8);
 
 Returns strategy token percentage allocation.
 
-#### feePercentage
+#### withdrawalFee
 
 ```JS
-function feePercentage() external view returns (uint8);
+function withdrawalFee() external view returns (uint8, uint8);
 ```
 
-Returns withdrawal fee percentage.
+Returns withdrawal fee fraction and fraction base.
 
 #### priceDecimals
 
