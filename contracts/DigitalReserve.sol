@@ -45,7 +45,6 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     address private drcAddress;
 
     bool private depositEnabled = false;
-    bool private withdrawalEnabled = true;
 
     IUniswapV2Router02 private uniswapRouter;
 
@@ -157,8 +156,6 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-withdrawDrc}.
      */
     function withdrawDrc(uint256 drcAmount, uint32 deadline) external override {
-        require(withdrawalEnabled, "Withdraw is disabled.");
-
         address[] memory path = new address[](2);
         path[0] = uniswapRouter.WETH();
         path[1] = drcAddress;
@@ -181,7 +178,6 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-withdrawPercentage}.
      */
     function withdrawPercentage(uint8 percentage, uint32 deadline) external override {
-        require(withdrawalEnabled, "Withdraw is disabled.");
         require(percentage <= 100, "Attempt to withdraw more than 100% of the asset");
 
         uint256 podToBurn = balanceOf(msg.sender).mul(percentage).div(100);
@@ -198,15 +194,6 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     }
 
     /**
-     * @dev Enable or disable withdrawal.
-     * @param status Withdrawal allowed or not
-     * Disable withdrawal if it is to protect users' fund if there's any security issue.
-     */
-    function changeWithdrawalStatus(bool status) external onlyOwner {
-        withdrawalEnabled = status;
-    }
-
-    /**
      * @dev Change withdrawal fee percentage.
      * If 1%, then input (1,100)
      * If 0.5%, then input (5,1000)
@@ -214,7 +201,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @param withdrawalFeeBase_ Fraction of withdrawal fee base
      */
     function changeFee(uint8 withdrawalFeeFraction_, uint8 withdrawalFeeBase_) external onlyOwner {
-        require(withdrawalFeeFraction_ <= withdrawalFeeBase_, "Fee percentage exceeded base.");
+        require(withdrawalFeeFraction_ <= withdrawalFeeBase_, "Fee fraction exceeded base.");
+        uint8 percentage = withdrawalFeeFraction_ * 100 / withdrawalFeeBase_;
+        require(percentage <= 2, "Attempt to set percentage higher than 2%."); // Requested by community
+        
         _withdrawalFeeFraction = withdrawalFeeFraction_;
         _withdrawalFeeBase = withdrawalFeeBase_;
     }

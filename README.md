@@ -146,7 +146,6 @@ The DRC Foundation wallet is a secure, industry grade multi-signature wallet man
 
 The contract owner can execute the following functions:
 - Turn deposit on/off - To protect users' fund if there's any security issue or assist DR upgrade
-- Turn withdraw on/off - To protect users' fund if there's any security issue
 - Rebalancing
 - Set/change strategy
 - Change withdrawal fee
