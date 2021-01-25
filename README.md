@@ -279,6 +279,3 @@ event Withdraw(address user, uint256 amount, uint256 fees, uint256 podBurned, ui
 ```
 
 Emit each time a withdraw action happened.
-
-## Last deployed contract on Ropsten:
-https://ropsten.etherscan.io/address/0x2Bc633b7C60eEb91eda57D01f00bd17a79f72A15#contracts
