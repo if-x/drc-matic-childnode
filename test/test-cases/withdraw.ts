@@ -36,11 +36,13 @@ export const testWithdraw = async (accounts: Truffle.Accounts) => {
     assert.exists(withdrawLog);
 
     if (withdrawLog) {
-      assert.equal(withdrawLog.args.amount.toNumber(), 100000);
+      assert.isAtLeast(withdrawLog.args.amount.toNumber(), 100000);
       assert.isAbove(Number(web3.utils.fromWei(withdrawLog.args.podBurned)), 0);
       assert.equal(
-        Number(web3.utils.fromWei(withdrawLog.args.podTotalSupply)),
-        prevUserPod - Number(web3.utils.fromWei(withdrawLog.args.podBurned))
+        Number(web3.utils.fromWei(withdrawLog.args.podTotalSupply)).toFixed(2),
+        (
+          prevUserPod - Number(web3.utils.fromWei(withdrawLog.args.podBurned))
+        ).toFixed(2)
       );
       assert.equal(withdrawLog.args.user, accounts[0]);
 

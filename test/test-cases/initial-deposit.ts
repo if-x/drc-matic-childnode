@@ -48,7 +48,6 @@ export const testInitialDeposit = async (accounts: Truffle.Accounts) => {
     await instance.changeDepositStatus(true);
 
     const userBalance = await drcContract.methods.balanceOf(accounts[0]).call();
-    console.log("DRC balance", userBalance, accounts[0]);
 
     await drcContract.methods
       .approve(instance.address, 1000)
