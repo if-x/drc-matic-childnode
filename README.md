@@ -11,12 +11,12 @@ yarn compile
 
 Migrate contract:
 ```
-yarn migrate --network nerworkName
+yarn migrate --network networkName
 ```
 
 Verify on etherscan:
 ```
-yarn etherscan-verify --network nerworkName
+yarn etherscan-verify --network networkName
 ```
 
 Start a dev server to run tests:
