@@ -34,8 +34,7 @@
     "@openzeppelin/contracts": "^3.3.0",
     "@uniswap/lib": "^4.0.1-alpha",
     "@uniswap/v2-core": "^1.0.1",
-    "@uniswap/v2-periphery": "^1.1.0-beta.0",
-    "ganache-cli": "^6.12.2"
+    "@uniswap/v2-periphery": "^1.1.0-beta.0"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.2.1",
@@ -51,6 +50,7 @@
     "eslint-plugin-prettier": "^3.3.0",
     "chai": "^4.2.0",
     "dotenv": "^8.2.0",
+    "ganache-cli": "^6.12.2",
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.3",
     "truffle": "^5.1.62",
