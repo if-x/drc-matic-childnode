@@ -31,7 +31,7 @@ yarn test
 
 ## How it works
 
-Digital Reserve contract converts user's DRC into a set of SoV assets using the Uniswap router, and hold these assets for it's users. When users initiate a withdrawal action, the contract converts a share of the vault, that the user is requesting, to DRC and sends it back to their wallet.
+Digital Reserve contract converts user's DRC into a set of SoV assets using the Uniswap router, and holds these assets for it's users. When users initiate a withdrawal action, the contract converts a share of the vault, that the user is requesting, to DRC and sends it back to their wallet.
 
 ## Deposit
 
