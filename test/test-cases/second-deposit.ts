@@ -45,10 +45,19 @@ export const testSecondDeposit = async (accounts: Truffle.Accounts) => {
 
     assert.equal(allowance, 1000000);
 
+    const drPodPriceBefore = web3.utils.fromWei(
+      await instance.getProofOfDepositPrice()
+    );
+
     const depositResult = await instance.depositDrc(
       1000000,
       getUnixTimeAfterMins(10)
     );
+
+    const drPodPriceAfter = web3.utils.fromWei(
+      await instance.getProofOfDepositPrice()
+    );
+    assert.equal(drPodPriceAfter, drPodPriceBefore);
 
     const depositLog = depositResult.logs.find(
       (log) => log.event === "Deposit"

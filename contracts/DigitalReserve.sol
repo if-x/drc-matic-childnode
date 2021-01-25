@@ -37,7 +37,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     uint8 private _strategyTokenCount;
     address[] private _strategyTokens;
     mapping(address => uint8) private _tokenPercentage;
-    uint8 private _feePercentage = 1;
+    uint8 private _withdrawalFeeFraction = 1;
+    uint8 private _withdrawalFeeBase = 100;
     uint8 private _priceDecimals = 18;
 
     address private router;
@@ -70,10 +71,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     }
 
     /**
-     * @dev See {IDigitalReserve-feePercentage}.
+     * @dev See {IDigitalReserve-withdrawalFee}.
      */
-    function feePercentage() external view override returns (uint8) {
-        return _feePercentage;
+    function withdrawalFee() external view override returns (uint8, uint8) {
+        return (_withdrawalFeeFraction, _withdrawalFeeBase);
     }
 
     /**
@@ -98,13 +99,13 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-getUserVaultInDrc}.
      */
     function getUserVaultInDrc(address user) public view override returns (uint256, uint256, uint256) {
-        uint256[] memory userStrategyTokens = _getStrateTokensByPodAmount(balanceOf(user));
+        uint256[] memory userStrategyTokens = _getStrategyTokensByPodAmount(balanceOf(user));
         uint256 userVaultWorthInEth = _getEthAmountByStrategyTokensAmount(userStrategyTokens, true);
         uint256 userVaultWorthInEthAfterSwap = _getEthAmountByStrategyTokensAmount(userStrategyTokens, false);
 
         uint256 drcAmountBeforeFees = _getTokenAmountByEthAmount(userVaultWorthInEth, drcAddress, true);
 
-        uint256 fees = userVaultWorthInEthAfterSwap.mul(_feePercentage).div(100);
+        uint256 fees = userVaultWorthInEthAfterSwap.mul(_withdrawalFeeFraction).div(_withdrawalFeeBase);
         uint256 drcAmountAfterFees = _getTokenAmountByEthAmount(userVaultWorthInEthAfterSwap.sub(fees), drcAddress, false);
 
         return (drcAmountBeforeFees, drcAmountAfterFees, fees);
@@ -163,14 +164,14 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         path[1] = drcAddress;
 
         uint256 ethNeeded = uniswapRouter.getAmountsIn(drcAmount, path)[0];
-        uint256 ethNeededPlusFee = ethNeeded.mul(100).div(100 - _feePercentage);
+        uint256 ethNeededPlusFee = ethNeeded.mul(_withdrawalFeeBase).div(_withdrawalFeeBase - _withdrawalFeeFraction);
 
-        uint256[] memory userStrategyTokens = _getStrateTokensByPodAmount(balanceOf(msg.sender));
-        uint256 userVaultWorthInEth = _getEthAmountByStrategyTokensAmount(userStrategyTokens, false);
+        uint256[] memory userStrategyTokens = _getStrategyTokensByPodAmount(balanceOf(msg.sender));
+        uint256 userVaultWorth = _getEthAmountByStrategyTokensAmount(userStrategyTokens, false);
 
-        require(userVaultWorthInEth >= ethNeededPlusFee, "Attempt to withdraw more than user's holding.");
+        require(userVaultWorth >= ethNeededPlusFee, "Attempt to withdraw more than user's holding.");
 
-        uint256 amountFraction = ethNeededPlusFee.mul(1e10).div(userVaultWorthInEth);
+        uint256 amountFraction = ethNeededPlusFee.mul(1e10).div(userVaultWorth);
         uint256 podToBurn = balanceOf(msg.sender).mul(amountFraction).div(1e10);
 
         _withdrawProofOfDeposit(podToBurn, deadline);
@@ -189,26 +190,33 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
 
     /**
      * @dev Enable or disable deposit.
+     * @param status Deposit allowed or not
      * Disable deposit if it is to protect users' fund if there's any security issue or assist DR upgrade.
      */
-    function changeDepositStatus(bool _status) external onlyOwner {
-        depositEnabled = _status;
+    function changeDepositStatus(bool status) external onlyOwner {
+        depositEnabled = status;
     }
 
     /**
      * @dev Enable or disable withdrawal.
+     * @param status Withdrawal allowed or not
      * Disable withdrawal if it is to protect users' fund if there's any security issue.
      */
-    function changeWithdrawalStatus(bool _status) external onlyOwner {
-        withdrawalEnabled = _status;
+    function changeWithdrawalStatus(bool status) external onlyOwner {
+        withdrawalEnabled = status;
     }
 
     /**
      * @dev Change withdrawal fee percentage.
+     * If 1%, then input (1,100)
+     * If 0.5%, then input (5,1000)
+     * @param withdrawalFeeFraction_ Fraction of withdrawal fee based on withdrawalFeeBase_
+     * @param withdrawalFeeBase_ Fraction of withdrawal fee base
      */
-    function changeFee(uint8 feePercentage_) external onlyOwner {
-        require(feePercentage_ <= 100, "Fee percentage exceeded 100.");
-        _feePercentage = feePercentage_;
+    function changeFee(uint8 withdrawalFeeFraction_, uint8 withdrawalFeeBase_) external onlyOwner {
+        require(withdrawalFeeFraction_ <= withdrawalFeeBase_, "Fee percentage exceeded base.");
+        _withdrawalFeeFraction = withdrawalFeeFraction_;
+        _withdrawalFeeBase = withdrawalFeeBase_;
     }
 
     /**
@@ -317,12 +325,12 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @param deadline Unix timestamp after which the transaction will revert.
      */
     function _withdrawProofOfDeposit(uint256 podToBurn, uint32 deadline) private {
-        uint256[] memory strategyTokensToWithdraw = _getStrateTokensByPodAmount(podToBurn);
+        uint256[] memory strategyTokensToWithdraw = _getStrategyTokensByPodAmount(podToBurn);
 
         _burn(msg.sender, podToBurn);
 
         uint256 ethConverted = _convertStrategyTokensToEth(strategyTokensToWithdraw, deadline);
-        uint256 fees = ethConverted.mul(_feePercentage).div(100);
+        uint256 fees = ethConverted.mul(_withdrawalFeeFraction).div(_withdrawalFeeBase);
 
         uint256 drcAmount = _convertEthToToken(ethConverted.sub(fees), drcAddress, deadline);
 
@@ -402,7 +410,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev Get DR-POD worth in an array of strategy tokens.
      * @param _amount Amount of DR-POD to convert.
      */
-    function _getStrateTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
+    function _getStrategyTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
         uint256[] memory strategyTokenAmount = new uint256[](_strategyTokenCount);
 
         uint256 podFraction = _amount.mul(1e10).div(totalSupply());

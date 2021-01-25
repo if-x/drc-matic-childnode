@@ -25,9 +25,10 @@ interface IDigitalReserve {
     function tokenPercentage(address tokenAddress) external view returns (uint8);
 
     /**
-     * @dev Returns withdrawal fee percentage.
+     * @dev Returns withdrawal withdrawal fee.
+     * @return The first value is fraction, the second one is fraction base
      */
-    function feePercentage() external view returns (uint8);
+    function withdrawalFee() external view returns (uint8, uint8);
 
     /**
      * @dev Returns Proof of Deposit price decimal.
