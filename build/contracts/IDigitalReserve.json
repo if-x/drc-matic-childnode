@@ -1,0 +1,3860 @@
+{
+  "contractName": "IDigitalReserve",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "podMinted",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "podTotalSupply",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deposit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "strategyTokens",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8[]",
+          "name": "tokenPercentage",
+          "type": "uint8[]"
+        }
+      ],
+      "name": "Rebalance",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "oldTokens",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8[]",
+          "name": "oldPercentage",
+          "type": "uint8[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "newTokens",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8[]",
+          "name": "newPercentage",
+          "type": "uint8[]"
+        }
+      ],
+      "name": "StrategyChange",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "fees",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "podBurned",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "podTotalSupply",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdraw",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "strategyTokenCount",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "index",
+          "type": "uint8"
+        }
+      ],
+      "name": "strategyTokens",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "tokenPercentage",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawalFee",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "priceDecimals",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalTokenStored",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "percentage",
+          "type": "uint8"
+        }
+      ],
+      "name": "getUserVaultInDrc",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getProofOfDepositPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "drcAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint32",
+          "name": "deadline",
+          "type": "uint32"
+        }
+      ],
+      "name": "depositDrc",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "drcAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint32",
+          "name": "deadline",
+          "type": "uint32"
+        }
+      ],
+      "name": "withdrawDrc",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "percentage",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint32",
+          "name": "deadline",
+          "type": "uint32"
+        }
+      ],
+      "name": "withdrawPercentage",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"podMinted\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"podTotalSupply\",\"type\":\"uint256\"}],\"name\":\"Deposit\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address[]\",\"name\":\"strategyTokens\",\"type\":\"address[]\"},{\"indexed\":false,\"internalType\":\"uint8[]\",\"name\":\"tokenPercentage\",\"type\":\"uint8[]\"}],\"name\":\"Rebalance\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address[]\",\"name\":\"oldTokens\",\"type\":\"address[]\"},{\"indexed\":false,\"internalType\":\"uint8[]\",\"name\":\"oldPercentage\",\"type\":\"uint8[]\"},{\"indexed\":false,\"internalType\":\"address[]\",\"name\":\"newTokens\",\"type\":\"address[]\"},{\"indexed\":false,\"internalType\":\"uint8[]\",\"name\":\"newPercentage\",\"type\":\"uint8[]\"}],\"name\":\"StrategyChange\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fees\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"podBurned\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"podTotalSupply\",\"type\":\"uint256\"}],\"name\":\"Withdraw\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"drcAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"deadline\",\"type\":\"uint32\"}],\"name\":\"depositDrc\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getProofOfDepositPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"percentage\",\"type\":\"uint8\"}],\"name\":\"getUserVaultInDrc\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"priceDecimals\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"strategyTokenCount\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"index\",\"type\":\"uint8\"}],\"name\":\"strategyTokens\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"}],\"name\":\"tokenPercentage\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalTokenStored\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"drcAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"deadline\",\"type\":\"uint32\"}],\"name\":\"withdrawDrc\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"percentage\",\"type\":\"uint8\"},{\"internalType\":\"uint32\",\"name\":\"deadline\",\"type\":\"uint32\"}],\"name\":\"withdrawPercentage\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawalFee\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Interface of Digital Reserve contract.\",\"events\":{\"Deposit(address,uint256,uint256,uint256)\":{\"details\":\"Emit each time a deposit action happened.\",\"params\":{\"amount\":\"DRC amount deposited.\",\"podMinted\":\"New DR-POD minted.\",\"podTotalSupply\":\"New DR-POD total supply.\",\"user\":\"Address made the deposit.\"}},\"Rebalance(address[],uint8[])\":{\"details\":\"Emit each time a rebalance function is called by owner.\",\"params\":{\"strategyTokens\":\"Strategy token addresses.\",\"tokenPercentage\":\"Strategy token allocation percentages.\"}},\"StrategyChange(address[],uint8[],address[],uint8[])\":{\"details\":\"Emit when strategy set or change function is called by owner.\",\"params\":{\"newPercentage\":\"New strategy's token allocation percentages.\",\"newTokens\":\"New strategy's token addresses.\",\"oldPercentage\":\"Pervious strategy's token allocation percentages.\",\"oldTokens\":\"Pervious strategy's token addresses.\"}},\"Withdraw(address,uint256,uint256,uint256,uint256)\":{\"details\":\"Emit each time a withdraw action happened.\",\"params\":{\"amount\":\"DRC amount withdrawn.\",\"fees\":\"Withdrawal fees charged in wei.\",\"podBurned\":\"DR-POD burned.\",\"podTotalSupply\":\"New DR-POD total supply.\",\"user\":\"Address made the withdrawal.\"}}},\"kind\":\"dev\",\"methods\":{\"depositDrc(uint256,uint32)\":{\"details\":\"Deposit DRC to DR.\",\"params\":{\"deadline\":\"Unix timestamp after which the transaction will revert.\",\"drcAmount\":\"DRC amount user want to deposit.\"}},\"getProofOfDepositPrice()\":{\"details\":\"Proof of Deposit net unit worth.\"},\"getUserVaultInDrc(address,uint8)\":{\"details\":\"Returns how much user's vault share in DRC amount.\",\"params\":{\"percentage\":\"Percentage of user holding\",\"user\":\"Address of a DR user\"},\"returns\":{\"_0\":\"The first output is total worth in DRC,  second one is total DRC could withdraw (exclude fees),  and last output is fees in wei.\"}},\"priceDecimals()\":{\"details\":\"Returns Proof of Deposit price decimal. Price should be displayed as `price / (10 ** priceDecimals)`.\"},\"strategyTokenCount()\":{\"details\":\"Returns length of the portfolio asset tokens.  Can be used to get token addresses and percentage allocations.\"},\"strategyTokens(uint8)\":{\"details\":\"Returns a strategy token address. \",\"params\":{\"index\":\"The index of a strategy token\"}},\"tokenPercentage(address)\":{\"details\":\"Returns strategy token percentage allocation.\",\"params\":{\"tokenAddress\":\"The address of a strategy token\"}},\"totalTokenStored()\":{\"details\":\"Returns total strategy tokens stored in an array. The output amount sequence is the strategyTokens() array sequence.\"},\"withdrawDrc(uint256,uint32)\":{\"details\":\"Withdraw DRC from DR.\",\"params\":{\"deadline\":\"Unix timestamp after which the transaction will revert.\",\"drcAmount\":\"DRC amount user want to withdraw.\"}},\"withdrawPercentage(uint8,uint32)\":{\"details\":\"Withdraw a percentage of holding from DR.\",\"params\":{\"deadline\":\"Unix timestamp after which the transaction will revert.\",\"percentage\":\"Percentage of holding user want to withdraw.\"}},\"withdrawalFee()\":{\"details\":\"Returns withdrawal withdrawal fee.\",\"returns\":{\"_0\":\"The first value is fraction, the second one is fraction base\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/fayexue/if-x-github/digital-reserve/contracts/interfaces/IDigitalReserve.sol\":\"IDigitalReserve\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":999999},\"remappings\":[]},\"sources\":{\"/Users/fayexue/if-x-github/digital-reserve/contracts/interfaces/IDigitalReserve.sol\":{\"keccak256\":\"0xadba271129e32b5995cfd51b02c2460fadaf5ae476c0ff9e5c550d79e9ec8658\",\"license\":\"AGPL-3.0-or-later\",\"urls\":[\"bzz-raw://13663620bcf52c7fd0fa0bd177f66202fdaa31e040298b905ec4fef594f5e489\",\"dweb:/ipfs/QmTLmcXYaY9CfWDozLUDAKLaY7vCT5TGHKtzoY2MSwrkgH\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: AGPL-3.0-or-later\n\npragma solidity ^0.6.6;\n\n/**\n* @dev Interface of Digital Reserve contract.\n*/\ninterface IDigitalReserve {\n    /**\n     * @dev Returns length of the portfolio asset tokens. \n     * Can be used to get token addresses and percentage allocations.\n     */\n    function strategyTokenCount() external view returns (uint8);\n\n    /**\n     * @dev Returns a strategy token address. \n     * @param index The index of a strategy token\n     */\n    function strategyTokens(uint8 index) external view returns (address);\n\n    /**\n     * @dev Returns strategy token percentage allocation.\n     * @param tokenAddress The address of a strategy token\n     */\n    function tokenPercentage(address tokenAddress) external view returns (uint8);\n\n    /**\n     * @dev Returns withdrawal withdrawal fee.\n     * @return The first value is fraction, the second one is fraction base\n     */\n    function withdrawalFee() external view returns (uint8, uint8);\n\n    /**\n     * @dev Returns Proof of Deposit price decimal.\n     * Price should be displayed as `price / (10 ** priceDecimals)`.\n     */\n    function priceDecimals() external view returns (uint8);\n\n    /**\n     * @dev Returns total strategy tokens stored in an array.\n     * The output amount sequence is the strategyTokens() array sequence.\n     */\n    function totalTokenStored() external view returns (uint256[] memory);\n\n    /**\n     * @dev Returns how much user's vault share in DRC amount.\n     * @param user Address of a DR user\n     * @param percentage Percentage of user holding\n     * @return The first output is total worth in DRC, \n     * second one is total DRC could withdraw (exclude fees), \n     * and last output is fees in wei.\n     */\n    function getUserVaultInDrc(address user, uint8 percentage) external view returns (uint256, uint256, uint256);\n\n    /**\n     * @dev Proof of Deposit net unit worth.\n     */\n    function getProofOfDepositPrice() external view returns (uint256);\n\n    /**\n     * @dev Deposit DRC to DR.\n     * @param drcAmount DRC amount user want to deposit.\n     * @param deadline Unix timestamp after which the transaction will revert.\n     */\n    function depositDrc(uint256 drcAmount, uint32 deadline) external;\n\n    /**\n     * @dev Withdraw DRC from DR.\n     * @param drcAmount DRC amount user want to withdraw.\n     * @param deadline Unix timestamp after which the transaction will revert.\n     */\n    function withdrawDrc(uint256 drcAmount, uint32 deadline) external;\n\n    /**\n     * @dev Withdraw a percentage of holding from DR.\n     * @param percentage Percentage of holding user want to withdraw.\n     * @param deadline Unix timestamp after which the transaction will revert.\n     */\n    function withdrawPercentage(uint8 percentage, uint32 deadline) external;\n\n    /**\n     * @dev Emit when strategy set or change function is called by owner.\n     * @param oldTokens Pervious strategy's token addresses.\n     * @param oldPercentage Pervious strategy's token allocation percentages.\n     * @param newTokens New strategy's token addresses.\n     * @param newPercentage New strategy's token allocation percentages.\n     */\n    event StrategyChange(address[] oldTokens, uint8[] oldPercentage, address[] newTokens, uint8[] newPercentage);\n    \n    /**\n     * @dev Emit each time a rebalance function is called by owner.\n     * @param strategyTokens Strategy token addresses.\n     * @param tokenPercentage Strategy token allocation percentages.\n     */\n    event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);\n    \n    /**\n     * @dev Emit each time a deposit action happened.\n     * @param user Address made the deposit.\n     * @param amount DRC amount deposited.\n     * @param podMinted New DR-POD minted.\n     * @param podTotalSupply New DR-POD total supply.\n     */\n    event Deposit(address user, uint256 amount, uint256 podMinted, uint256 podTotalSupply);\n    \n    /**\n     * @dev Emit each time a withdraw action happened.\n     * @param user Address made the withdrawal.\n     * @param amount DRC amount withdrawn.\n     * @param fees Withdrawal fees charged in wei.\n     * @param podBurned DR-POD burned.\n     * @param podTotalSupply New DR-POD total supply.\n     */\n     event Withdraw(address user, uint256 amount, uint256 fees, uint256 podBurned, uint256 podTotalSupply);\n}\n",
+  "sourcePath": "/Users/fayexue/if-x-github/digital-reserve/contracts/interfaces/IDigitalReserve.sol",
+  "ast": {
+    "absolutePath": "/Users/fayexue/if-x-github/digital-reserve/contracts/interfaces/IDigitalReserve.sol",
+    "exportedSymbols": {
+      "IDigitalReserve": [
+        1868
+      ]
+    },
+    "id": 1869,
+    "license": "AGPL-3.0-or-later",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1731,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".6"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "47:23:2"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 1732,
+          "nodeType": "StructuredDocumentation",
+          "src": "72:52:2",
+          "text": " @dev Interface of Digital Reserve contract."
+        },
+        "fullyImplemented": false,
+        "id": 1868,
+        "linearizedBaseContracts": [
+          1868
+        ],
+        "name": "IDigitalReserve",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 1733,
+              "nodeType": "StructuredDocumentation",
+              "src": "157:140:2",
+              "text": " @dev Returns length of the portfolio asset tokens. \n Can be used to get token addresses and percentage allocations."
+            },
+            "functionSelector": "df9f8564",
+            "id": 1738,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "strategyTokenCount",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1734,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "329:2:2"
+            },
+            "returnParameters": {
+              "id": 1737,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1736,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1738,
+                  "src": "355:5:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1735,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "355:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "354:7:2"
+            },
+            "scope": 1868,
+            "src": "302:60:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1739,
+              "nodeType": "StructuredDocumentation",
+              "src": "368:108:2",
+              "text": " @dev Returns a strategy token address. \n @param index The index of a strategy token"
+            },
+            "functionSelector": "007865b5",
+            "id": 1746,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "strategyTokens",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1742,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1741,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1746,
+                  "src": "505:11:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1740,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "505:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "504:13:2"
+            },
+            "returnParameters": {
+              "id": 1745,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1744,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1746,
+                  "src": "541:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1743,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "541:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "540:9:2"
+            },
+            "scope": 1868,
+            "src": "481:69:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1747,
+              "nodeType": "StructuredDocumentation",
+              "src": "556:128:2",
+              "text": " @dev Returns strategy token percentage allocation.\n @param tokenAddress The address of a strategy token"
+            },
+            "functionSelector": "d34ee4c0",
+            "id": 1754,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "tokenPercentage",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1750,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1749,
+                  "mutability": "mutable",
+                  "name": "tokenAddress",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1754,
+                  "src": "714:20:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1748,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "714:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "713:22:2"
+            },
+            "returnParameters": {
+              "id": 1753,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1752,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1754,
+                  "src": "759:5:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1751,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "759:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "758:7:2"
+            },
+            "scope": 1868,
+            "src": "689:77:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1755,
+              "nodeType": "StructuredDocumentation",
+              "src": "772:134:2",
+              "text": " @dev Returns withdrawal withdrawal fee.\n @return The first value is fraction, the second one is fraction base"
+            },
+            "functionSelector": "8bc7e8c4",
+            "id": 1762,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawalFee",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1756,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "933:2:2"
+            },
+            "returnParameters": {
+              "id": 1761,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1758,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1762,
+                  "src": "959:5:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1757,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "959:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1760,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1762,
+                  "src": "966:5:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1759,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "966:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "958:14:2"
+            },
+            "scope": 1868,
+            "src": "911:62:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1763,
+              "nodeType": "StructuredDocumentation",
+              "src": "979:132:2",
+              "text": " @dev Returns Proof of Deposit price decimal.\n Price should be displayed as `price / (10 ** priceDecimals)`."
+            },
+            "functionSelector": "05300b28",
+            "id": 1768,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "priceDecimals",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1764,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1138:2:2"
+            },
+            "returnParameters": {
+              "id": 1767,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1766,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1768,
+                  "src": "1164:5:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1765,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1164:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1163:7:2"
+            },
+            "scope": 1868,
+            "src": "1116:55:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1769,
+              "nodeType": "StructuredDocumentation",
+              "src": "1177:147:2",
+              "text": " @dev Returns total strategy tokens stored in an array.\n The output amount sequence is the strategyTokens() array sequence."
+            },
+            "functionSelector": "bd806621",
+            "id": 1775,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "totalTokenStored",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1770,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1354:2:2"
+            },
+            "returnParameters": {
+              "id": 1774,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1773,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1775,
+                  "src": "1380:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1771,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1380:7:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 1772,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1380:9:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1379:18:2"
+            },
+            "scope": 1868,
+            "src": "1329:69:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1776,
+              "nodeType": "StructuredDocumentation",
+              "src": "1404:324:2",
+              "text": " @dev Returns how much user's vault share in DRC amount.\n @param user Address of a DR user\n @param percentage Percentage of user holding\n @return The first output is total worth in DRC, \n second one is total DRC could withdraw (exclude fees), \n and last output is fees in wei."
+            },
+            "functionSelector": "7b123c3a",
+            "id": 1789,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getUserVaultInDrc",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1781,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1778,
+                  "mutability": "mutable",
+                  "name": "user",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1789,
+                  "src": "1760:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1777,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1760:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1780,
+                  "mutability": "mutable",
+                  "name": "percentage",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1789,
+                  "src": "1774:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1779,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1774:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1759:32:2"
+            },
+            "returnParameters": {
+              "id": 1788,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1783,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1789,
+                  "src": "1815:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1782,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1815:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1785,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1789,
+                  "src": "1824:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1784,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1824:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1787,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1789,
+                  "src": "1833:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1786,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1833:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1814:27:2"
+            },
+            "scope": 1868,
+            "src": "1733:109:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1790,
+              "nodeType": "StructuredDocumentation",
+              "src": "1848:56:2",
+              "text": " @dev Proof of Deposit net unit worth."
+            },
+            "functionSelector": "18181a9c",
+            "id": 1795,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getProofOfDepositPrice",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1791,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1940:2:2"
+            },
+            "returnParameters": {
+              "id": 1794,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1793,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1795,
+                  "src": "1966:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1792,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1966:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1965:9:2"
+            },
+            "scope": 1868,
+            "src": "1909:66:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1796,
+              "nodeType": "StructuredDocumentation",
+              "src": "1981:178:2",
+              "text": " @dev Deposit DRC to DR.\n @param drcAmount DRC amount user want to deposit.\n @param deadline Unix timestamp after which the transaction will revert."
+            },
+            "functionSelector": "47e6dece",
+            "id": 1803,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "depositDrc",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1801,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1798,
+                  "mutability": "mutable",
+                  "name": "drcAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1803,
+                  "src": "2184:17:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1797,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2184:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1800,
+                  "mutability": "mutable",
+                  "name": "deadline",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1803,
+                  "src": "2203:15:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 1799,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2203:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2183:36:2"
+            },
+            "returnParameters": {
+              "id": 1802,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2228:0:2"
+            },
+            "scope": 1868,
+            "src": "2164:65:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1804,
+              "nodeType": "StructuredDocumentation",
+              "src": "2235:182:2",
+              "text": " @dev Withdraw DRC from DR.\n @param drcAmount DRC amount user want to withdraw.\n @param deadline Unix timestamp after which the transaction will revert."
+            },
+            "functionSelector": "4c183918",
+            "id": 1811,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawDrc",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1809,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1806,
+                  "mutability": "mutable",
+                  "name": "drcAmount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1811,
+                  "src": "2443:17:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1805,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2443:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1808,
+                  "mutability": "mutable",
+                  "name": "deadline",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1811,
+                  "src": "2462:15:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 1807,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2462:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2442:36:2"
+            },
+            "returnParameters": {
+              "id": 1810,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2487:0:2"
+            },
+            "scope": 1868,
+            "src": "2422:66:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": {
+              "id": 1812,
+              "nodeType": "StructuredDocumentation",
+              "src": "2494:214:2",
+              "text": " @dev Withdraw a percentage of holding from DR.\n @param percentage Percentage of holding user want to withdraw.\n @param deadline Unix timestamp after which the transaction will revert."
+            },
+            "functionSelector": "6f827c34",
+            "id": 1819,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawPercentage",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 1817,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1814,
+                  "mutability": "mutable",
+                  "name": "percentage",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1819,
+                  "src": "2741:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1813,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2741:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1816,
+                  "mutability": "mutable",
+                  "name": "deadline",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1819,
+                  "src": "2759:15:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 1815,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2759:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2740:35:2"
+            },
+            "returnParameters": {
+              "id": 1818,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2784:0:2"
+            },
+            "scope": 1868,
+            "src": "2713:72:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 1820,
+              "nodeType": "StructuredDocumentation",
+              "src": "2791:353:2",
+              "text": " @dev Emit when strategy set or change function is called by owner.\n @param oldTokens Pervious strategy's token addresses.\n @param oldPercentage Pervious strategy's token allocation percentages.\n @param newTokens New strategy's token addresses.\n @param newPercentage New strategy's token allocation percentages."
+            },
+            "id": 1834,
+            "name": "StrategyChange",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1833,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1823,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "oldTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1834,
+                  "src": "3170:19:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1821,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "3170:7:2",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 1822,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "3170:9:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1826,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "oldPercentage",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1834,
+                  "src": "3191:21:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint8_$dyn_memory_ptr",
+                    "typeString": "uint8[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1824,
+                      "name": "uint8",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "3191:5:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint8",
+                        "typeString": "uint8"
+                      }
+                    },
+                    "id": 1825,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "3191:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint8_$dyn_storage_ptr",
+                      "typeString": "uint8[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1829,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "newTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1834,
+                  "src": "3214:19:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1827,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "3214:7:2",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 1828,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "3214:9:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1832,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "newPercentage",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1834,
+                  "src": "3235:21:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint8_$dyn_memory_ptr",
+                    "typeString": "uint8[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1830,
+                      "name": "uint8",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "3235:5:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint8",
+                        "typeString": "uint8"
+                      }
+                    },
+                    "id": 1831,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "3235:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint8_$dyn_storage_ptr",
+                      "typeString": "uint8[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3169:88:2"
+            },
+            "src": "3149:109:2"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 1835,
+              "nodeType": "StructuredDocumentation",
+              "src": "3268:203:2",
+              "text": " @dev Emit each time a rebalance function is called by owner.\n @param strategyTokens Strategy token addresses.\n @param tokenPercentage Strategy token allocation percentages."
+            },
+            "id": 1843,
+            "name": "Rebalance",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1842,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1838,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "strategyTokens",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1843,
+                  "src": "3492:24:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1836,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "3492:7:2",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 1837,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "3492:9:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1841,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "tokenPercentage",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1843,
+                  "src": "3518:23:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint8_$dyn_memory_ptr",
+                    "typeString": "uint8[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1839,
+                      "name": "uint8",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "3518:5:2",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint8",
+                        "typeString": "uint8"
+                      }
+                    },
+                    "id": 1840,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "3518:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint8_$dyn_storage_ptr",
+                      "typeString": "uint8[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3491:51:2"
+            },
+            "src": "3476:67:2"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 1844,
+              "nodeType": "StructuredDocumentation",
+              "src": "3553:250:2",
+              "text": " @dev Emit each time a deposit action happened.\n @param user Address made the deposit.\n @param amount DRC amount deposited.\n @param podMinted New DR-POD minted.\n @param podTotalSupply New DR-POD total supply."
+            },
+            "id": 1854,
+            "name": "Deposit",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1853,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1846,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "user",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1854,
+                  "src": "3822:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1845,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3822:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1848,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1854,
+                  "src": "3836:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1847,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3836:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1850,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "podMinted",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1854,
+                  "src": "3852:17:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1849,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3852:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1852,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "podTotalSupply",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1854,
+                  "src": "3871:22:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1851,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3871:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3821:73:2"
+            },
+            "src": "3808:87:2"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 1855,
+              "nodeType": "StructuredDocumentation",
+              "src": "3905:301:2",
+              "text": " @dev Emit each time a withdraw action happened.\n @param user Address made the withdrawal.\n @param amount DRC amount withdrawn.\n @param fees Withdrawal fees charged in wei.\n @param podBurned DR-POD burned.\n @param podTotalSupply New DR-POD total supply."
+            },
+            "id": 1867,
+            "name": "Withdraw",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1866,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1857,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "user",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1867,
+                  "src": "4227:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1856,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4227:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1859,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1867,
+                  "src": "4241:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1858,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4241:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1861,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "fees",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1867,
+                  "src": "4257:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1860,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4257:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1863,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "podBurned",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1867,
+                  "src": "4271:17:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1862,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4271:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1865,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "podTotalSupply",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 1867,
+                  "src": "4290:22:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1864,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4290:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4226:87:2"
+            },
+            "src": "4212:102:2"
+          }
+        ],
+        "scope": 1869,
+        "src": "125:4191:2"
+      }
+    ],
+    "src": "47:4270:2"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/Users/fayexue/if-x-github/digital-reserve/contracts/interfaces/IDigitalReserve.sol",
+      "exportedSymbols": {
+        "IDigitalReserve": [
+          1868
+        ]
+      },
+      "license": "AGPL-3.0-or-later"
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.6",
+            ".6"
+          ]
+        },
+        "id": 1731,
+        "name": "PragmaDirective",
+        "src": "47:23:2"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            1868
+          ],
+          "name": "IDigitalReserve",
+          "scope": 1869
+        },
+        "children": [
+          {
+            "attributes": {
+              "text": " @dev Interface of Digital Reserve contract."
+            },
+            "id": 1732,
+            "name": "StructuredDocumentation",
+            "src": "72:52:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "df9f8564",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "strategyTokenCount",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Returns length of the portfolio asset tokens. \n Can be used to get token addresses and percentage allocations."
+                },
+                "id": 1733,
+                "name": "StructuredDocumentation",
+                "src": "157:140:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1734,
+                "name": "ParameterList",
+                "src": "329:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1738,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1735,
+                        "name": "ElementaryTypeName",
+                        "src": "355:5:2"
+                      }
+                    ],
+                    "id": 1736,
+                    "name": "VariableDeclaration",
+                    "src": "355:5:2"
+                  }
+                ],
+                "id": 1737,
+                "name": "ParameterList",
+                "src": "354:7:2"
+              }
+            ],
+            "id": 1738,
+            "name": "FunctionDefinition",
+            "src": "302:60:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "007865b5",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "strategyTokens",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Returns a strategy token address. \n @param index The index of a strategy token"
+                },
+                "id": 1739,
+                "name": "StructuredDocumentation",
+                "src": "368:108:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "index",
+                      "overrides": null,
+                      "scope": 1746,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1740,
+                        "name": "ElementaryTypeName",
+                        "src": "505:5:2"
+                      }
+                    ],
+                    "id": 1741,
+                    "name": "VariableDeclaration",
+                    "src": "505:11:2"
+                  }
+                ],
+                "id": 1742,
+                "name": "ParameterList",
+                "src": "504:13:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1746,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1743,
+                        "name": "ElementaryTypeName",
+                        "src": "541:7:2"
+                      }
+                    ],
+                    "id": 1744,
+                    "name": "VariableDeclaration",
+                    "src": "541:7:2"
+                  }
+                ],
+                "id": 1745,
+                "name": "ParameterList",
+                "src": "540:9:2"
+              }
+            ],
+            "id": 1746,
+            "name": "FunctionDefinition",
+            "src": "481:69:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "d34ee4c0",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "tokenPercentage",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Returns strategy token percentage allocation.\n @param tokenAddress The address of a strategy token"
+                },
+                "id": 1747,
+                "name": "StructuredDocumentation",
+                "src": "556:128:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "tokenAddress",
+                      "overrides": null,
+                      "scope": 1754,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1748,
+                        "name": "ElementaryTypeName",
+                        "src": "714:7:2"
+                      }
+                    ],
+                    "id": 1749,
+                    "name": "VariableDeclaration",
+                    "src": "714:20:2"
+                  }
+                ],
+                "id": 1750,
+                "name": "ParameterList",
+                "src": "713:22:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1754,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1751,
+                        "name": "ElementaryTypeName",
+                        "src": "759:5:2"
+                      }
+                    ],
+                    "id": 1752,
+                    "name": "VariableDeclaration",
+                    "src": "759:5:2"
+                  }
+                ],
+                "id": 1753,
+                "name": "ParameterList",
+                "src": "758:7:2"
+              }
+            ],
+            "id": 1754,
+            "name": "FunctionDefinition",
+            "src": "689:77:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "8bc7e8c4",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "withdrawalFee",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Returns withdrawal withdrawal fee.\n @return The first value is fraction, the second one is fraction base"
+                },
+                "id": 1755,
+                "name": "StructuredDocumentation",
+                "src": "772:134:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1756,
+                "name": "ParameterList",
+                "src": "933:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1762,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1757,
+                        "name": "ElementaryTypeName",
+                        "src": "959:5:2"
+                      }
+                    ],
+                    "id": 1758,
+                    "name": "VariableDeclaration",
+                    "src": "959:5:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1762,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1759,
+                        "name": "ElementaryTypeName",
+                        "src": "966:5:2"
+                      }
+                    ],
+                    "id": 1760,
+                    "name": "VariableDeclaration",
+                    "src": "966:5:2"
+                  }
+                ],
+                "id": 1761,
+                "name": "ParameterList",
+                "src": "958:14:2"
+              }
+            ],
+            "id": 1762,
+            "name": "FunctionDefinition",
+            "src": "911:62:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "05300b28",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "priceDecimals",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Returns Proof of Deposit price decimal.\n Price should be displayed as `price / (10 ** priceDecimals)`."
+                },
+                "id": 1763,
+                "name": "StructuredDocumentation",
+                "src": "979:132:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1764,
+                "name": "ParameterList",
+                "src": "1138:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1768,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1765,
+                        "name": "ElementaryTypeName",
+                        "src": "1164:5:2"
+                      }
+                    ],
+                    "id": 1766,
+                    "name": "VariableDeclaration",
+                    "src": "1164:5:2"
+                  }
+                ],
+                "id": 1767,
+                "name": "ParameterList",
+                "src": "1163:7:2"
+              }
+            ],
+            "id": 1768,
+            "name": "FunctionDefinition",
+            "src": "1116:55:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "bd806621",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "totalTokenStored",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Returns total strategy tokens stored in an array.\n The output amount sequence is the strategyTokens() array sequence."
+                },
+                "id": 1769,
+                "name": "StructuredDocumentation",
+                "src": "1177:147:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1770,
+                "name": "ParameterList",
+                "src": "1354:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1775,
+                      "stateVariable": false,
+                      "storageLocation": "memory",
+                      "type": "uint256[]",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "length": null,
+                          "type": "uint256[]"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "uint256",
+                              "type": "uint256"
+                            },
+                            "id": 1771,
+                            "name": "ElementaryTypeName",
+                            "src": "1380:7:2"
+                          }
+                        ],
+                        "id": 1772,
+                        "name": "ArrayTypeName",
+                        "src": "1380:9:2"
+                      }
+                    ],
+                    "id": 1773,
+                    "name": "VariableDeclaration",
+                    "src": "1380:16:2"
+                  }
+                ],
+                "id": 1774,
+                "name": "ParameterList",
+                "src": "1379:18:2"
+              }
+            ],
+            "id": 1775,
+            "name": "FunctionDefinition",
+            "src": "1329:69:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "7b123c3a",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getUserVaultInDrc",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Returns how much user's vault share in DRC amount.\n @param user Address of a DR user\n @param percentage Percentage of user holding\n @return The first output is total worth in DRC, \n second one is total DRC could withdraw (exclude fees), \n and last output is fees in wei."
+                },
+                "id": 1776,
+                "name": "StructuredDocumentation",
+                "src": "1404:324:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "user",
+                      "overrides": null,
+                      "scope": 1789,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1777,
+                        "name": "ElementaryTypeName",
+                        "src": "1760:7:2"
+                      }
+                    ],
+                    "id": 1778,
+                    "name": "VariableDeclaration",
+                    "src": "1760:12:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "percentage",
+                      "overrides": null,
+                      "scope": 1789,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1779,
+                        "name": "ElementaryTypeName",
+                        "src": "1774:5:2"
+                      }
+                    ],
+                    "id": 1780,
+                    "name": "VariableDeclaration",
+                    "src": "1774:16:2"
+                  }
+                ],
+                "id": 1781,
+                "name": "ParameterList",
+                "src": "1759:32:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1789,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1782,
+                        "name": "ElementaryTypeName",
+                        "src": "1815:7:2"
+                      }
+                    ],
+                    "id": 1783,
+                    "name": "VariableDeclaration",
+                    "src": "1815:7:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1789,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1784,
+                        "name": "ElementaryTypeName",
+                        "src": "1824:7:2"
+                      }
+                    ],
+                    "id": 1785,
+                    "name": "VariableDeclaration",
+                    "src": "1824:7:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1789,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1786,
+                        "name": "ElementaryTypeName",
+                        "src": "1833:7:2"
+                      }
+                    ],
+                    "id": 1787,
+                    "name": "VariableDeclaration",
+                    "src": "1833:7:2"
+                  }
+                ],
+                "id": 1788,
+                "name": "ParameterList",
+                "src": "1814:27:2"
+              }
+            ],
+            "id": 1789,
+            "name": "FunctionDefinition",
+            "src": "1733:109:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "18181a9c",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getProofOfDepositPrice",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Proof of Deposit net unit worth."
+                },
+                "id": 1790,
+                "name": "StructuredDocumentation",
+                "src": "1848:56:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1791,
+                "name": "ParameterList",
+                "src": "1940:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 1795,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1792,
+                        "name": "ElementaryTypeName",
+                        "src": "1966:7:2"
+                      }
+                    ],
+                    "id": 1793,
+                    "name": "VariableDeclaration",
+                    "src": "1966:7:2"
+                  }
+                ],
+                "id": 1794,
+                "name": "ParameterList",
+                "src": "1965:9:2"
+              }
+            ],
+            "id": 1795,
+            "name": "FunctionDefinition",
+            "src": "1909:66:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "47e6dece",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "depositDrc",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "nonpayable",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Deposit DRC to DR.\n @param drcAmount DRC amount user want to deposit.\n @param deadline Unix timestamp after which the transaction will revert."
+                },
+                "id": 1796,
+                "name": "StructuredDocumentation",
+                "src": "1981:178:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "drcAmount",
+                      "overrides": null,
+                      "scope": 1803,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1797,
+                        "name": "ElementaryTypeName",
+                        "src": "2184:7:2"
+                      }
+                    ],
+                    "id": 1798,
+                    "name": "VariableDeclaration",
+                    "src": "2184:17:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "deadline",
+                      "overrides": null,
+                      "scope": 1803,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint32",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint32",
+                          "type": "uint32"
+                        },
+                        "id": 1799,
+                        "name": "ElementaryTypeName",
+                        "src": "2203:6:2"
+                      }
+                    ],
+                    "id": 1800,
+                    "name": "VariableDeclaration",
+                    "src": "2203:15:2"
+                  }
+                ],
+                "id": 1801,
+                "name": "ParameterList",
+                "src": "2183:36:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1802,
+                "name": "ParameterList",
+                "src": "2228:0:2"
+              }
+            ],
+            "id": 1803,
+            "name": "FunctionDefinition",
+            "src": "2164:65:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "4c183918",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "withdrawDrc",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "nonpayable",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Withdraw DRC from DR.\n @param drcAmount DRC amount user want to withdraw.\n @param deadline Unix timestamp after which the transaction will revert."
+                },
+                "id": 1804,
+                "name": "StructuredDocumentation",
+                "src": "2235:182:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "drcAmount",
+                      "overrides": null,
+                      "scope": 1811,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1805,
+                        "name": "ElementaryTypeName",
+                        "src": "2443:7:2"
+                      }
+                    ],
+                    "id": 1806,
+                    "name": "VariableDeclaration",
+                    "src": "2443:17:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "deadline",
+                      "overrides": null,
+                      "scope": 1811,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint32",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint32",
+                          "type": "uint32"
+                        },
+                        "id": 1807,
+                        "name": "ElementaryTypeName",
+                        "src": "2462:6:2"
+                      }
+                    ],
+                    "id": 1808,
+                    "name": "VariableDeclaration",
+                    "src": "2462:15:2"
+                  }
+                ],
+                "id": 1809,
+                "name": "ParameterList",
+                "src": "2442:36:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1810,
+                "name": "ParameterList",
+                "src": "2487:0:2"
+              }
+            ],
+            "id": 1811,
+            "name": "FunctionDefinition",
+            "src": "2422:66:2"
+          },
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "6f827c34",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "withdrawPercentage",
+              "overrides": null,
+              "scope": 1868,
+              "stateMutability": "nonpayable",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Withdraw a percentage of holding from DR.\n @param percentage Percentage of holding user want to withdraw.\n @param deadline Unix timestamp after which the transaction will revert."
+                },
+                "id": 1812,
+                "name": "StructuredDocumentation",
+                "src": "2494:214:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "percentage",
+                      "overrides": null,
+                      "scope": 1819,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint8",
+                          "type": "uint8"
+                        },
+                        "id": 1813,
+                        "name": "ElementaryTypeName",
+                        "src": "2741:5:2"
+                      }
+                    ],
+                    "id": 1814,
+                    "name": "VariableDeclaration",
+                    "src": "2741:16:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "deadline",
+                      "overrides": null,
+                      "scope": 1819,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint32",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint32",
+                          "type": "uint32"
+                        },
+                        "id": 1815,
+                        "name": "ElementaryTypeName",
+                        "src": "2759:6:2"
+                      }
+                    ],
+                    "id": 1816,
+                    "name": "VariableDeclaration",
+                    "src": "2759:15:2"
+                  }
+                ],
+                "id": 1817,
+                "name": "ParameterList",
+                "src": "2740:35:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 1818,
+                "name": "ParameterList",
+                "src": "2784:0:2"
+              }
+            ],
+            "id": 1819,
+            "name": "FunctionDefinition",
+            "src": "2713:72:2"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "StrategyChange"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Emit when strategy set or change function is called by owner.\n @param oldTokens Pervious strategy's token addresses.\n @param oldPercentage Pervious strategy's token allocation percentages.\n @param newTokens New strategy's token addresses.\n @param newPercentage New strategy's token allocation percentages."
+                },
+                "id": 1820,
+                "name": "StructuredDocumentation",
+                "src": "2791:353:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "oldTokens",
+                      "overrides": null,
+                      "scope": 1834,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address[]",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "length": null,
+                          "type": "address[]"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "address",
+                              "stateMutability": "nonpayable",
+                              "type": "address"
+                            },
+                            "id": 1821,
+                            "name": "ElementaryTypeName",
+                            "src": "3170:7:2"
+                          }
+                        ],
+                        "id": 1822,
+                        "name": "ArrayTypeName",
+                        "src": "3170:9:2"
+                      }
+                    ],
+                    "id": 1823,
+                    "name": "VariableDeclaration",
+                    "src": "3170:19:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "oldPercentage",
+                      "overrides": null,
+                      "scope": 1834,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8[]",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "length": null,
+                          "type": "uint8[]"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "uint8",
+                              "type": "uint8"
+                            },
+                            "id": 1824,
+                            "name": "ElementaryTypeName",
+                            "src": "3191:5:2"
+                          }
+                        ],
+                        "id": 1825,
+                        "name": "ArrayTypeName",
+                        "src": "3191:7:2"
+                      }
+                    ],
+                    "id": 1826,
+                    "name": "VariableDeclaration",
+                    "src": "3191:21:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "newTokens",
+                      "overrides": null,
+                      "scope": 1834,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address[]",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "length": null,
+                          "type": "address[]"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "address",
+                              "stateMutability": "nonpayable",
+                              "type": "address"
+                            },
+                            "id": 1827,
+                            "name": "ElementaryTypeName",
+                            "src": "3214:7:2"
+                          }
+                        ],
+                        "id": 1828,
+                        "name": "ArrayTypeName",
+                        "src": "3214:9:2"
+                      }
+                    ],
+                    "id": 1829,
+                    "name": "VariableDeclaration",
+                    "src": "3214:19:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "newPercentage",
+                      "overrides": null,
+                      "scope": 1834,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8[]",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "length": null,
+                          "type": "uint8[]"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "uint8",
+                              "type": "uint8"
+                            },
+                            "id": 1830,
+                            "name": "ElementaryTypeName",
+                            "src": "3235:5:2"
+                          }
+                        ],
+                        "id": 1831,
+                        "name": "ArrayTypeName",
+                        "src": "3235:7:2"
+                      }
+                    ],
+                    "id": 1832,
+                    "name": "VariableDeclaration",
+                    "src": "3235:21:2"
+                  }
+                ],
+                "id": 1833,
+                "name": "ParameterList",
+                "src": "3169:88:2"
+              }
+            ],
+            "id": 1834,
+            "name": "EventDefinition",
+            "src": "3149:109:2"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "Rebalance"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Emit each time a rebalance function is called by owner.\n @param strategyTokens Strategy token addresses.\n @param tokenPercentage Strategy token allocation percentages."
+                },
+                "id": 1835,
+                "name": "StructuredDocumentation",
+                "src": "3268:203:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "strategyTokens",
+                      "overrides": null,
+                      "scope": 1843,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address[]",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "length": null,
+                          "type": "address[]"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "address",
+                              "stateMutability": "nonpayable",
+                              "type": "address"
+                            },
+                            "id": 1836,
+                            "name": "ElementaryTypeName",
+                            "src": "3492:7:2"
+                          }
+                        ],
+                        "id": 1837,
+                        "name": "ArrayTypeName",
+                        "src": "3492:9:2"
+                      }
+                    ],
+                    "id": 1838,
+                    "name": "VariableDeclaration",
+                    "src": "3492:24:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "tokenPercentage",
+                      "overrides": null,
+                      "scope": 1843,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint8[]",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "length": null,
+                          "type": "uint8[]"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "name": "uint8",
+                              "type": "uint8"
+                            },
+                            "id": 1839,
+                            "name": "ElementaryTypeName",
+                            "src": "3518:5:2"
+                          }
+                        ],
+                        "id": 1840,
+                        "name": "ArrayTypeName",
+                        "src": "3518:7:2"
+                      }
+                    ],
+                    "id": 1841,
+                    "name": "VariableDeclaration",
+                    "src": "3518:23:2"
+                  }
+                ],
+                "id": 1842,
+                "name": "ParameterList",
+                "src": "3491:51:2"
+              }
+            ],
+            "id": 1843,
+            "name": "EventDefinition",
+            "src": "3476:67:2"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "Deposit"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Emit each time a deposit action happened.\n @param user Address made the deposit.\n @param amount DRC amount deposited.\n @param podMinted New DR-POD minted.\n @param podTotalSupply New DR-POD total supply."
+                },
+                "id": 1844,
+                "name": "StructuredDocumentation",
+                "src": "3553:250:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "user",
+                      "overrides": null,
+                      "scope": 1854,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1845,
+                        "name": "ElementaryTypeName",
+                        "src": "3822:7:2"
+                      }
+                    ],
+                    "id": 1846,
+                    "name": "VariableDeclaration",
+                    "src": "3822:12:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "amount",
+                      "overrides": null,
+                      "scope": 1854,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1847,
+                        "name": "ElementaryTypeName",
+                        "src": "3836:7:2"
+                      }
+                    ],
+                    "id": 1848,
+                    "name": "VariableDeclaration",
+                    "src": "3836:14:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "podMinted",
+                      "overrides": null,
+                      "scope": 1854,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1849,
+                        "name": "ElementaryTypeName",
+                        "src": "3852:7:2"
+                      }
+                    ],
+                    "id": 1850,
+                    "name": "VariableDeclaration",
+                    "src": "3852:17:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "podTotalSupply",
+                      "overrides": null,
+                      "scope": 1854,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1851,
+                        "name": "ElementaryTypeName",
+                        "src": "3871:7:2"
+                      }
+                    ],
+                    "id": 1852,
+                    "name": "VariableDeclaration",
+                    "src": "3871:22:2"
+                  }
+                ],
+                "id": 1853,
+                "name": "ParameterList",
+                "src": "3821:73:2"
+              }
+            ],
+            "id": 1854,
+            "name": "EventDefinition",
+            "src": "3808:87:2"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "Withdraw"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @dev Emit each time a withdraw action happened.\n @param user Address made the withdrawal.\n @param amount DRC amount withdrawn.\n @param fees Withdrawal fees charged in wei.\n @param podBurned DR-POD burned.\n @param podTotalSupply New DR-POD total supply."
+                },
+                "id": 1855,
+                "name": "StructuredDocumentation",
+                "src": "3905:301:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "user",
+                      "overrides": null,
+                      "scope": 1867,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 1856,
+                        "name": "ElementaryTypeName",
+                        "src": "4227:7:2"
+                      }
+                    ],
+                    "id": 1857,
+                    "name": "VariableDeclaration",
+                    "src": "4227:12:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "amount",
+                      "overrides": null,
+                      "scope": 1867,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1858,
+                        "name": "ElementaryTypeName",
+                        "src": "4241:7:2"
+                      }
+                    ],
+                    "id": 1859,
+                    "name": "VariableDeclaration",
+                    "src": "4241:14:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "fees",
+                      "overrides": null,
+                      "scope": 1867,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1860,
+                        "name": "ElementaryTypeName",
+                        "src": "4257:7:2"
+                      }
+                    ],
+                    "id": 1861,
+                    "name": "VariableDeclaration",
+                    "src": "4257:12:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "podBurned",
+                      "overrides": null,
+                      "scope": 1867,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1862,
+                        "name": "ElementaryTypeName",
+                        "src": "4271:7:2"
+                      }
+                    ],
+                    "id": 1863,
+                    "name": "VariableDeclaration",
+                    "src": "4271:17:2"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "mutability": "mutable",
+                      "name": "podTotalSupply",
+                      "overrides": null,
+                      "scope": 1867,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 1864,
+                        "name": "ElementaryTypeName",
+                        "src": "4290:7:2"
+                      }
+                    ],
+                    "id": 1865,
+                    "name": "VariableDeclaration",
+                    "src": "4290:22:2"
+                  }
+                ],
+                "id": 1866,
+                "name": "ParameterList",
+                "src": "4226:87:2"
+              }
+            ],
+            "id": 1867,
+            "name": "EventDefinition",
+            "src": "4212:102:2"
+          }
+        ],
+        "id": 1868,
+        "name": "ContractDefinition",
+        "src": "125:4191:2"
+      }
+    ],
+    "id": 1869,
+    "name": "SourceUnit",
+    "src": "47:4270:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.3",
+  "updatedAt": "2021-01-28T09:54:12.689Z",
+  "devdoc": {
+    "details": "Interface of Digital Reserve contract.",
+    "events": {
+      "Deposit(address,uint256,uint256,uint256)": {
+        "details": "Emit each time a deposit action happened.",
+        "params": {
+          "amount": "DRC amount deposited.",
+          "podMinted": "New DR-POD minted.",
+          "podTotalSupply": "New DR-POD total supply.",
+          "user": "Address made the deposit."
+        }
+      },
+      "Rebalance(address[],uint8[])": {
+        "details": "Emit each time a rebalance function is called by owner.",
+        "params": {
+          "strategyTokens": "Strategy token addresses.",
+          "tokenPercentage": "Strategy token allocation percentages."
+        }
+      },
+      "StrategyChange(address[],uint8[],address[],uint8[])": {
+        "details": "Emit when strategy set or change function is called by owner.",
+        "params": {
+          "newPercentage": "New strategy's token allocation percentages.",
+          "newTokens": "New strategy's token addresses.",
+          "oldPercentage": "Pervious strategy's token allocation percentages.",
+          "oldTokens": "Pervious strategy's token addresses."
+        }
+      },
+      "Withdraw(address,uint256,uint256,uint256,uint256)": {
+        "details": "Emit each time a withdraw action happened.",
+        "params": {
+          "amount": "DRC amount withdrawn.",
+          "fees": "Withdrawal fees charged in wei.",
+          "podBurned": "DR-POD burned.",
+          "podTotalSupply": "New DR-POD total supply.",
+          "user": "Address made the withdrawal."
+        }
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "depositDrc(uint256,uint32)": {
+        "details": "Deposit DRC to DR.",
+        "params": {
+          "deadline": "Unix timestamp after which the transaction will revert.",
+          "drcAmount": "DRC amount user want to deposit."
+        }
+      },
+      "getProofOfDepositPrice()": {
+        "details": "Proof of Deposit net unit worth."
+      },
+      "getUserVaultInDrc(address,uint8)": {
+        "details": "Returns how much user's vault share in DRC amount.",
+        "params": {
+          "percentage": "Percentage of user holding",
+          "user": "Address of a DR user"
+        },
+        "returns": {
+          "_0": "The first output is total worth in DRC,  second one is total DRC could withdraw (exclude fees),  and last output is fees in wei."
+        }
+      },
+      "priceDecimals()": {
+        "details": "Returns Proof of Deposit price decimal. Price should be displayed as `price / (10 ** priceDecimals)`."
+      },
+      "strategyTokenCount()": {
+        "details": "Returns length of the portfolio asset tokens.  Can be used to get token addresses and percentage allocations."
+      },
+      "strategyTokens(uint8)": {
+        "details": "Returns a strategy token address. ",
+        "params": {
+          "index": "The index of a strategy token"
+        }
+      },
+      "tokenPercentage(address)": {
+        "details": "Returns strategy token percentage allocation.",
+        "params": {
+          "tokenAddress": "The address of a strategy token"
+        }
+      },
+      "totalTokenStored()": {
+        "details": "Returns total strategy tokens stored in an array. The output amount sequence is the strategyTokens() array sequence."
+      },
+      "withdrawDrc(uint256,uint32)": {
+        "details": "Withdraw DRC from DR.",
+        "params": {
+          "deadline": "Unix timestamp after which the transaction will revert.",
+          "drcAmount": "DRC amount user want to withdraw."
+        }
+      },
+      "withdrawPercentage(uint8,uint32)": {
+        "details": "Withdraw a percentage of holding from DR.",
+        "params": {
+          "deadline": "Unix timestamp after which the transaction will revert.",
+          "percentage": "Percentage of holding user want to withdraw."
+        }
+      },
+      "withdrawalFee()": {
+        "details": "Returns withdrawal withdrawal fee.",
+        "returns": {
+          "_0": "The first value is fraction, the second one is fraction base"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

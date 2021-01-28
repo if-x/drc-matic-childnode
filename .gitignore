@@ -107,11 +107,7 @@ dist
 .secrets/
 
 # truffle
-build/
 migrations/
-
-# typechain
-types/
 
 # buidler
 artifacts/
