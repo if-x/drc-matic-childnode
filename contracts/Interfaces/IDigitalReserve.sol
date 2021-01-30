@@ -84,15 +84,27 @@ interface IDigitalReserve {
      * @param oldPercentage Pervious strategy's token allocation percentages.
      * @param newTokens New strategy's token addresses.
      * @param newPercentage New strategy's token allocation percentages.
+     * @param tokensStored How much each token is stored.
      */
-    event StrategyChange(address[] oldTokens, uint8[] oldPercentage, address[] newTokens, uint8[] newPercentage);
+    event StrategyChange(
+        address[] oldTokens, 
+        uint8[] oldPercentage, 
+        address[] newTokens, 
+        uint8[] newPercentage, 
+        uint256[] tokensStored
+    );
     
     /**
      * @dev Emit each time a rebalance function is called by owner.
      * @param strategyTokens Strategy token addresses.
      * @param tokenPercentage Strategy token allocation percentages.
+     * @param tokensStored How much each token is stored.
      */
-    event Rebalance(address[] strategyTokens, uint8[] tokenPercentage);
+    event Rebalance(
+        address[] strategyTokens, 
+        uint8[] tokenPercentage, 
+        uint256[] tokensStored
+    );
     
     /**
      * @dev Emit each time a deposit action happened.
@@ -100,8 +112,15 @@ interface IDigitalReserve {
      * @param amount DRC amount deposited.
      * @param podMinted New DR-POD minted.
      * @param podTotalSupply New DR-POD total supply.
+     * @param tokensStored How much each token is stored.
      */
-    event Deposit(address user, uint256 amount, uint256 podMinted, uint256 podTotalSupply);
+    event Deposit(
+        address user, 
+        uint256 amount, 
+        uint256 podMinted, 
+        uint256 podTotalSupply, 
+        uint256[] tokensStored
+    );
     
     /**
      * @dev Emit each time a withdraw action happened.
@@ -110,6 +129,14 @@ interface IDigitalReserve {
      * @param fees Withdrawal fees charged in wei.
      * @param podBurned DR-POD burned.
      * @param podTotalSupply New DR-POD total supply.
+     * @param tokensStored How much each token is stored.
      */
-     event Withdraw(address user, uint256 amount, uint256 fees, uint256 podBurned, uint256 podTotalSupply);
+    event Withdraw(
+        address user, 
+        uint256 amount, 
+        uint256 fees, 
+        uint256 podBurned, 
+        uint256 podTotalSupply, 
+        uint256[] tokensStored
+    );
 }

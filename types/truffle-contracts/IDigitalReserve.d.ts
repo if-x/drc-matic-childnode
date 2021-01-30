@@ -17,10 +17,12 @@ export interface Deposit {
     amount: BN;
     podMinted: BN;
     podTotalSupply: BN;
+    tokensStored: BN[];
     0: string;
     1: BN;
     2: BN;
     3: BN;
+    4: BN[];
   };
 }
 
@@ -29,8 +31,10 @@ export interface Rebalance {
   args: {
     strategyTokens: string[];
     tokenPercentage: BN[];
+    tokensStored: BN[];
     0: string[];
     1: BN[];
+    2: BN[];
   };
 }
 
@@ -41,10 +45,12 @@ export interface StrategyChange {
     oldPercentage: BN[];
     newTokens: string[];
     newPercentage: BN[];
+    tokensStored: BN[];
     0: string[];
     1: BN[];
     2: string[];
     3: BN[];
+    4: BN[];
   };
 }
 
@@ -56,11 +62,13 @@ export interface Withdraw {
     fees: BN;
     podBurned: BN;
     podTotalSupply: BN;
+    tokensStored: BN[];
     0: string;
     1: BN;
     2: BN;
     3: BN;
     4: BN;
+    5: BN[];
   };
 }
 
