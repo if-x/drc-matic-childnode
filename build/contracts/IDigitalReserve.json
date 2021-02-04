@@ -4086,7 +4086,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-01-30T00:47:20.906Z",
+  "updatedAt": "2021-02-04T10:20:57.183Z",
   "devdoc": {
     "details": "Interface of Digital Reserve contract.",
     "events": {
