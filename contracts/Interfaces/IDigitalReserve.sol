@@ -115,7 +115,7 @@ interface IDigitalReserve {
      * @param tokensStored How much each token is stored.
      */
     event Deposit(
-        address user, 
+        address indexed user, 
         uint256 amount, 
         uint256 podMinted, 
         uint256 podTotalSupply, 
@@ -132,7 +132,7 @@ interface IDigitalReserve {
      * @param tokensStored How much each token is stored.
      */
     event Withdraw(
-        address user, 
+        address indexed user, 
         uint256 amount, 
         uint256 fees, 
         uint256 podBurned, 
