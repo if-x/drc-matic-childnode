@@ -29,9 +29,9 @@ export const getTokensWorth = async (
     ])
     .call();
 
-  const tokenWorth1 = Number(web3.utils.toWei(amount1[0]));
-  const tokenWorth2 = Number(web3.utils.toWei(amount2[0]));
-  const tokenWorth3 = Number(web3.utils.toWei(amount3[0]));
+  const tokenWorth1 = Number(web3.utils.fromWei(amount1[0]));
+  const tokenWorth2 = Number(web3.utils.fromWei(amount2[0]));
+  const tokenWorth3 = Number(web3.utils.fromWei(amount3[0]));
   const total = tokenWorth1 + tokenWorth2 + tokenWorth3;
 
   const percentage1 = Math.round((tokenWorth1 / total) * 100);
@@ -65,9 +65,9 @@ export const getTokensWorthSet2 = async (
     ])
     .call();
 
-  const tokenWorth1 = Number(web3.utils.toWei(amount1[0]));
-  const tokenWorth2 = Number(web3.utils.toWei(amount2[0]));
-  const tokenWorth3 = Number(web3.utils.toWei(tokens[2]));
+  const tokenWorth1 = Number(web3.utils.fromWei(amount1[0]));
+  const tokenWorth2 = Number(web3.utils.fromWei(amount2[0]));
+  const tokenWorth3 = Number(web3.utils.fromWei(tokens[2]));
   const total = tokenWorth1 + tokenWorth2 + tokenWorth3;
 
   const percentage1 = Math.round((tokenWorth1 / total) * 100);
