@@ -17,25 +17,24 @@ export const testSetStrategy = async () => {
 
   it("Should revert if setting to 0 tokens", async () => {
     await assertRevert(
-      instance.changeStrategy([], [], 0, getUnixTimeAfterMins(10)),
+      instance.changeStrategy([], [], getUnixTimeAfterMins(10)),
       "Setting strategy to 0 tokens.",
       "Can't set strategy to empty array"
     );
   });
 
-  it("Should revert if token numbers doesn't match strategyTokenCount", async () => {
+  it("Should revert if token numbers doesn't match percentage length", async () => {
     await assertRevert(
       instance.changeStrategy(
         [
           getContractAddress("wbtc", newtworkType),
           getContractAddress("paxg", newtworkType),
         ],
-        [60, 40],
-        3,
+        [60],
         getUnixTimeAfterMins(10)
       ),
-      "Token count doesn't match tokens length.",
-      "Can't set strategy count to wrong length"
+      "Strategy tokens length doesn't match token percentage length.",
+      "Can't set strategy tokens different from percentage length"
     );
   });
 
@@ -47,7 +46,6 @@ export const testSetStrategy = async () => {
           getContractAddress("paxg", newtworkType),
         ],
         [50, 40],
-        2,
         getUnixTimeAfterMins(10)
       ),
       "Total token percentage is not 100%.",
@@ -62,7 +60,6 @@ export const testSetStrategy = async () => {
         getContractAddress("paxg", newtworkType),
       ],
       [50, 50],
-      2,
       getUnixTimeAfterMins(10)
     );
 
@@ -94,7 +91,6 @@ export const testSetStrategy = async () => {
         getContractAddress("usdc", newtworkType),
       ],
       [40, 40, 20],
-      3,
       getUnixTimeAfterMins(10)
     );
 

@@ -513,7 +513,6 @@ export interface DigitalReserveInstance extends Truffle.ContractInstance {
   /**
    * Set or change DR strategy tokens and allocations.
    * @param deadline Unix timestamp after which the transaction will revert.
-   * @param strategyTokenCount_ Number of strategy tokens.
    * @param strategyTokens_ Array of strategy tokens.
    * @param tokenPercentage_ Array of strategy tokens' percentage allocations.
    */
@@ -521,28 +520,24 @@ export interface DigitalReserveInstance extends Truffle.ContractInstance {
     (
       strategyTokens_: string[],
       tokenPercentage_: (number | BN | string)[],
-      strategyTokenCount_: number | BN | string,
       deadline: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
       strategyTokens_: string[],
       tokenPercentage_: (number | BN | string)[],
-      strategyTokenCount_: number | BN | string,
       deadline: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
       strategyTokens_: string[],
       tokenPercentage_: (number | BN | string)[],
-      strategyTokenCount_: number | BN | string,
       deadline: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       strategyTokens_: string[],
       tokenPercentage_: (number | BN | string)[],
-      strategyTokenCount_: number | BN | string,
       deadline: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -964,7 +959,6 @@ export interface DigitalReserveInstance extends Truffle.ContractInstance {
     /**
      * Set or change DR strategy tokens and allocations.
      * @param deadline Unix timestamp after which the transaction will revert.
-     * @param strategyTokenCount_ Number of strategy tokens.
      * @param strategyTokens_ Array of strategy tokens.
      * @param tokenPercentage_ Array of strategy tokens' percentage allocations.
      */
@@ -972,28 +966,24 @@ export interface DigitalReserveInstance extends Truffle.ContractInstance {
       (
         strategyTokens_: string[],
         tokenPercentage_: (number | BN | string)[],
-        strategyTokenCount_: number | BN | string,
         deadline: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
         strategyTokens_: string[],
         tokenPercentage_: (number | BN | string)[],
-        strategyTokenCount_: number | BN | string,
         deadline: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
         strategyTokens_: string[],
         tokenPercentage_: (number | BN | string)[],
-        strategyTokenCount_: number | BN | string,
         deadline: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
         strategyTokens_: string[],
         tokenPercentage_: (number | BN | string)[],
-        strategyTokenCount_: number | BN | string,
         deadline: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;

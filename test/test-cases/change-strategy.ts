@@ -33,7 +33,6 @@ export const testChangeStrategy = async () => {
         getContractAddress("weth", newtworkType),
       ],
       [40, 30, 30],
-      3,
       getUnixTimeAfterMins(10)
     );
 

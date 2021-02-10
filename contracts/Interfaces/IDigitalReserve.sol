@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-pragma solidity ^0.6.6;
+pragma solidity =0.6.12;
 
 /**
 * @dev Interface of Digital Reserve contract.
@@ -10,7 +10,7 @@ interface IDigitalReserve {
      * @dev Returns length of the portfolio asset tokens. 
      * Can be used to get token addresses and percentage allocations.
      */
-    function strategyTokenCount() external view returns (uint8);
+    function strategyTokenCount() external view returns (uint256);
 
     /**
      * @dev Returns a strategy token address. 
