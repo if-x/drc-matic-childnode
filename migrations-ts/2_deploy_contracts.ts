@@ -1,5 +1,3 @@
-import { getContractAddress } from "../utils/contract-by-network";
-
 const DigitalReserve = artifacts.require("DigitalReserve");
 
 type Network = "development" | "ropsten" | "main";
@@ -11,9 +9,10 @@ module.exports = async (
 ) => {
   await deployer.deploy(
     DigitalReserve,
-    getContractAddress("uniswap", network),
-    getContractAddress("drc", network),
-    "Digital Reserve"
+    "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+    "0x6D38D09eb9705A5Fb1b8922eA80ea89d438159C7",
+    "Digital Reserve",
+    "DR-POD-S1"
   );
 
   const digitalReserve = await DigitalReserve.deployed();

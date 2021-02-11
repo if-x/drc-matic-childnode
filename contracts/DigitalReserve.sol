@@ -34,8 +34,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     constructor(
         address _router,
         address _drcAddress,
-        string memory _name
-    ) public ERC20(_name, "DR-POD") {
+        string memory _name,
+        string memory _symbol
+    ) public ERC20(_name, _symbol) {
         drcAddress = _drcAddress;
         uniswapRouter = IUniswapV2Router02(_router);
     }

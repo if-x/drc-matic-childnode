@@ -11,6 +11,7 @@ export interface DigitalReserveContract
     _router: string,
     _drcAddress: string,
     _name: string,
+    _symbol: string,
     meta?: Truffle.TransactionDetails
   ): Promise<DigitalReserveInstance>;
 }
