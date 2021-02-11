@@ -139,11 +139,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         require(IERC20(drcAddress).allowance(msg.sender, address(this)) >= drcAmount, "Contract is not allowed to spend user's DRC.");
         require(IERC20(drcAddress).balanceOf(msg.sender) >= drcAmount, "Attempted to deposit more than balance.");
 
-        SafeERC20.safeTransferFrom(IERC20(drcAddress), msg.sender, address(this), drcAmount);
-
         uint256 swapPriceImpact = depositPriceImpact(drcAmount);
         uint256 feeImpact = (_feeFraction * 10000) / (_feeBase + _feeFraction);
         require(swapPriceImpact <= 100 + feeImpact, "Price impact on this swap is larger than 1% plus fee percentage.");
+
+        SafeERC20.safeTransferFrom(IERC20(drcAddress), msg.sender, address(this), drcAmount);
 
         // Get current unit price before adding tokens to vault
         uint256 currentPodUnitPrice = getProofOfDepositPrice();
