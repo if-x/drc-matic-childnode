@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+import "./interfaces/Uniswap/IUniswapV2Factory.sol";
+import "./interfaces/Uniswap/IUniswapV2Pair.sol";
 import "./interfaces/Uniswap/IUniswapV2Router02.sol";
 import "./interfaces/IDigitalReserve.sol";
 
@@ -120,6 +122,14 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     }
 
     /**
+     * @dev See {IDigitalReserve-depositPriceImpact}.
+     */
+    function depositPriceImpact(uint256 drcAmount) public view override returns (uint256) {
+        uint256 ethWorth = _getEthAmountByTokenAmount(drcAmount, drcAddress, false);
+        return _getEthToStrategyTokensPriceImpact(ethWorth);
+    }
+
+    /**
      * @dev See {IDigitalReserve-depositDrc}.
      */
     function depositDrc(uint256 drcAmount, uint32 deadline) external override {
@@ -129,6 +139,10 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         require(IERC20(drcAddress).balanceOf(msg.sender) >= drcAmount, "Attempted to deposit more than balance.");
 
         SafeERC20.safeTransferFrom(IERC20(drcAddress), msg.sender, address(this), drcAmount);
+
+        uint256 swapPriceImpact = depositPriceImpact(drcAmount);
+        uint256 feeImpact = (_feeFraction * 10000) / (_feeBase + _feeFraction);
+        require(swapPriceImpact <= 100 + feeImpact, "Price impact on this swap is larger than 1% plus fee percentage.");
 
         // Get current unit price before adding tokens to vault
         uint256 currentPodUnitPrice = getProofOfDepositPrice();
@@ -423,6 +437,39 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
             strategyTokenAmount[i] = IERC20(_strategyTokens[i].tokenAddress).balanceOf(address(this)).mul(podFraction).div(1e10);
         }
         return strategyTokenAmount;
+    }
+
+    /**
+     * @dev Get price impact when swap ETH to a token via the Uniswap router.
+     * @param _amount Amount of eth to swap.
+     * @param _tokenAddress Address of token to swap to.
+     */
+    function _getEthToTokenPriceImpact(uint256 _amount, address _tokenAddress) private view returns (uint256) {
+        address factory = uniswapRouter.factory();
+        address pair = IUniswapV2Factory(factory).getPair(uniswapRouter.WETH(), _tokenAddress);
+        (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
+        uint256 reserveEth = 0;
+        if(IUniswapV2Pair(pair).token0() == uniswapRouter.WETH()) {
+            reserveEth = reserve0;
+        } else {
+            reserveEth = reserve1;
+        }
+        return 10000 - reserveEth.mul(10000).div(reserveEth.add(_amount));
+    }
+
+    /**
+     * @dev Get price impact when swap ETH to strategy tokens via the Uniswap router.
+     * @param _amount Amount of eth to swap.
+     */
+    function _getEthToStrategyTokensPriceImpact(uint256 _amount) private view returns (uint256) {
+        uint256 priceImpact = 0;
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            uint8 tokenPercentage = _strategyTokens[i].tokenPercentage;
+            uint256 amountToConvert = _amount.mul(tokenPercentage).div(100);
+            uint256 tokenSwapPriceImpact = _getEthToTokenPriceImpact(amountToConvert, _strategyTokens[i].tokenAddress);
+            priceImpact = priceImpact.add(tokenSwapPriceImpact.mul(tokenPercentage).div(100));
+        }
+        return priceImpact;
     }
 
     /**

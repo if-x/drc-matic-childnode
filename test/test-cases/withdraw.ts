@@ -49,9 +49,13 @@ export const testWithdraw = async (accounts: Truffle.Accounts) => {
       const valueInDrc = await instance.getUserVaultInDrc(accounts[0], 100);
       const currentDrcUserCanWithdraw = valueInDrc[1].toNumber();
 
-      assert.isAtLeast(
-        currentDrcUserCanWithdraw,
-        prevDrcUserCanWithdraw - withdrawLog.args.amount.toNumber() - 2
+      assert.equal(
+        Math.round(
+          (currentDrcUserCanWithdraw /
+            (prevDrcUserCanWithdraw - withdrawLog.args.amount.toNumber())) *
+            100
+        ),
+        100
       ); // The withdrawal has positive price impact, which made the price go up, then less DRC can be withdrawn
     }
   });

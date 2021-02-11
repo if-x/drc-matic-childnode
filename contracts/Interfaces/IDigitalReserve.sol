@@ -47,6 +47,13 @@ interface IDigitalReserve {
     function getUserVaultInDrc(address user, uint8 percentage) external view returns (uint256, uint256, uint256);
 
     /**
+     * @dev Get deposit price impact
+     * @param drcAmount DRC amount user want to deposit.
+     * @return The price impact on the base of 10000, 
+     */
+    function depositPriceImpact(uint256 drcAmount) external view returns (uint256);
+
+    /**
      * @dev Proof of Deposit net unit worth.
      */
     function getProofOfDepositPrice() external view returns (uint256);

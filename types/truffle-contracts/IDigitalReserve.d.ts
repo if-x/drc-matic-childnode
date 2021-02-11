@@ -118,6 +118,15 @@ export interface IDigitalReserveInstance extends Truffle.ContractInstance {
   ): Promise<{ 0: BN; 1: BN; 2: BN }>;
 
   /**
+   * Get deposit price impact
+   * @param drcAmount DRC amount user want to deposit.
+   */
+  depositPriceImpact(
+    drcAmount: number | BN | string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<BN>;
+
+  /**
    * Proof of Deposit net unit worth.
    */
   getProofOfDepositPrice(txDetails?: Truffle.TransactionDetails): Promise<BN>;
@@ -248,6 +257,15 @@ export interface IDigitalReserveInstance extends Truffle.ContractInstance {
       percentage: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<{ 0: BN; 1: BN; 2: BN }>;
+
+    /**
+     * Get deposit price impact
+     * @param drcAmount DRC amount user want to deposit.
+     */
+    depositPriceImpact(
+      drcAmount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<BN>;
 
     /**
      * Proof of Deposit net unit worth.

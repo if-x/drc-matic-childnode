@@ -32,25 +32,28 @@ export const testSecondDeposit = async (accounts: Truffle.Accounts) => {
     );
   });
 
-  it("Should be able to deposit 1000000 DRC and mint DR-POD", async () => {
+  it("Should be able to deposit 9000000 DRC and mint DR-POD", async () => {
     await instance.changeDepositStatus(true);
 
     await drcContract.methods
-      .approve(instance.address, 1000000)
+      .approve(instance.address, 9000000)
       .send({ from: accounts[0] });
 
     const allowance = Number(
       await drcContract.methods.allowance(accounts[0], instance.address).call()
     );
 
-    assert.equal(allowance, 1000000);
+    assert.equal(allowance, 9000000);
 
     const drPodPriceBefore = web3.utils.fromWei(
       await instance.getProofOfDepositPrice()
     );
 
+    const priceImpact = await instance.depositPriceImpact(9000000);
+    console.log("priceImpact", priceImpact.toNumber());
+
     const depositResult = await instance.depositDrc(
-      1000000,
+      9000000,
       getUnixTimeAfterMins(10)
     );
 
@@ -66,7 +69,7 @@ export const testSecondDeposit = async (accounts: Truffle.Accounts) => {
     assert.exists(depositLog);
 
     if (depositLog) {
-      assert.equal(depositLog.args.amount.toNumber(), 1000000);
+      assert.equal(depositLog.args.amount.toNumber(), 9000000);
       assert.isAbove(
         Number(web3.utils.fromWei(depositLog.args.podMinted)),
         990

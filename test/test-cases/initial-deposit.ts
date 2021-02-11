@@ -59,6 +59,13 @@ export const testInitialDeposit = async (accounts: Truffle.Accounts) => {
 
     assert.equal(allowance, 1000);
 
+    try {
+      const priceImpact = await instance.depositPriceImpact(1000);
+      console.log('priceImpact', priceImpact.toNumber())
+    } catch(error) {
+      console.log("Get price impact error", error)
+    }
+
     const deposit1000Result = await instance.depositDrc(
       1000,
       getUnixTimeAfterMins(10)
