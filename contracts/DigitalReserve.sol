@@ -38,8 +38,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         uniswapRouter = IUniswapV2Router02(_router);
     }
 
-    address[] private _strategyTokens;
-    mapping(address => uint8) private _tokenPercentage;
+    mapping(uint8 => StategyToken) private _strategyTokens;
+    uint256 private _strategyTokenCount;
     uint8 private _feeFraction = 1;
     uint8 private _feeBase = 100;
     uint8 private constant _priceDecimals = 18;
@@ -53,22 +53,15 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     /**
      * @dev See {IDigitalReserve-strategyTokenCount}.
      */
-    function strategyTokenCount() public view override returns (uint256) {
-        return _strategyTokens.length;
+    function strategyTokenCount() external view override returns (uint256) {
+        return _strategyTokenCount;
     }
 
     /**
      * @dev See {IDigitalReserve-strategyTokens}.
      */
-    function strategyTokens(uint8 index) external view override returns (address) {
-        return _strategyTokens[index];
-    }
-
-    /**
-     * @dev See {IDigitalReserve-tokenPercentage}.
-     */
-    function tokenPercentage(address tokenAddress) external view override returns (uint8) {
-        return _tokenPercentage[tokenAddress];
+    function strategyTokens(uint8 index) external view override returns (address, uint8) {
+        return (_strategyTokens[index].tokenAddress, _strategyTokens[index].tokenPercentage);
     }
 
     /**
@@ -89,9 +82,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-totalTokenStored}.
      */
     function totalTokenStored() public view override returns (uint256[] memory) {
-        uint256[] memory amounts = new uint256[](strategyTokenCount());
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            amounts[i] = IERC20(_strategyTokens[i]).balanceOf(address(this));
+        uint256[] memory amounts = new uint256[](_strategyTokenCount);
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            amounts[i] = IERC20(_strategyTokens[i].tokenAddress).balanceOf(address(this));
         }
         return amounts;
     }
@@ -130,7 +123,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-depositDrc}.
      */
     function depositDrc(uint256 drcAmount, uint32 deadline) external override {
-        require(strategyTokenCount() >= 1, "Strategy hasn't been set.");
+        require(_strategyTokenCount >= 1, "Strategy hasn't been set.");
         require(depositEnabled, "Deposit is disabled.");
         require(IERC20(drcAddress).allowance(msg.sender, address(this)) >= drcAmount, "Contract is not allowed to spend user's DRC.");
         require(IERC20(drcAddress).balanceOf(msg.sender) >= drcAmount, "Attempted to deposit more than balance.");
@@ -235,24 +228,24 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         }
         require(totalPercentage == 100, "Total token percentage is not 100%.");
 
-        address[] memory oldTokens = _strategyTokens;
-        uint8[] memory oldPercentage = new uint8[](strategyTokenCount());
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            oldPercentage[i] = _tokenPercentage[_strategyTokens[i]];
-            delete _tokenPercentage[_strategyTokens[i]];
+        address[] memory oldTokens = new address[](_strategyTokenCount);
+        uint8[] memory oldPercentage = new uint8[](_strategyTokenCount);
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            oldTokens[i] = _strategyTokens[i].tokenAddress;
+            oldPercentage[i] = _strategyTokens[i].tokenPercentage;
         }
 
         // Before mutate strategyTokens, convert current strategy tokens to ETH
         uint256 ethConverted = _convertStrategyTokensToEth(totalTokenStored(), deadline);
 
-        _strategyTokens = strategyTokens_;
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            _tokenPercentage[_strategyTokens[i]] = tokenPercentage_[i];
+        _strategyTokenCount = strategyTokens_.length;
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            _strategyTokens[i] = StategyToken(strategyTokens_[i], tokenPercentage_[i]);
         }
 
         _convertEthToStrategyTokens(ethConverted, deadline);
 
-        emit StrategyChange(oldTokens, oldPercentage, _strategyTokens, tokenPercentage_, totalTokenStored());
+        emit StrategyChange(oldTokens, oldPercentage, strategyTokens_, tokenPercentage_, totalTokenStored());
     }
 
     /**
@@ -262,27 +255,30 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @param deadline Unix timestamp after which the transaction will revert.
      */
     function rebalance(uint32 deadline) external onlyOwner {
-        require(strategyTokenCount() > 0, "Strategy hasn't been set");
+        require(_strategyTokenCount > 0, "Strategy hasn't been set");
 
         // Get each tokens worth and the total worth in ETH
         uint256 totalWorthInEth = 0;
-        uint256[] memory tokensWorthInEth = new uint256[](strategyTokenCount());
+        uint256[] memory tokensWorthInEth = new uint256[](_strategyTokenCount);
 
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            uint256 tokenWorth = _getEthAmountByTokenAmount(IERC20(_strategyTokens[i]).balanceOf(address(this)), _strategyTokens[i], true);
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            address currentToken = _strategyTokens[i].tokenAddress;
+            uint256 tokenWorth = _getEthAmountByTokenAmount(IERC20(currentToken).balanceOf(address(this)), currentToken, true);
             totalWorthInEth = totalWorthInEth.add(tokenWorth);
             tokensWorthInEth[i] = tokenWorth;
         }
 
-        uint8[] memory percentageArray = new uint8[](strategyTokenCount()); // Get percentages for event param
+        address[] memory strategyTokensArray = new address[](_strategyTokenCount); // Get percentages for event param
+        uint8[] memory percentageArray = new uint8[](_strategyTokenCount); // Get percentages for event param
         uint256 totalInEthToConvert = 0; // Get total token worth in ETH needed to be converted
         uint256 totalEthConverted = 0; // Get total token worth in ETH needed to be converted
-        uint256[] memory tokenInEthNeeded = new uint256[](strategyTokenCount()); // Get token worth need to be filled
+        uint256[] memory tokenInEthNeeded = new uint256[](_strategyTokenCount); // Get token worth need to be filled
 
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            percentageArray[i] = _tokenPercentage[_strategyTokens[i]];
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            strategyTokensArray[i] =  _strategyTokens[i].tokenAddress;
+            percentageArray[i] = _strategyTokens[i].tokenPercentage;
 
-            uint256 tokenShouldWorth = totalWorthInEth.mul(_tokenPercentage[_strategyTokens[i]]).div(100);
+            uint256 tokenShouldWorth = totalWorthInEth.mul(_strategyTokens[i].tokenPercentage).div(100);
 
             if (tokensWorthInEth[i] <= tokenShouldWorth) {
                 // If token worth less than should be, calculate the diff and store as needed
@@ -293,8 +289,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
 
                 // If token worth more than should be, convert the overflowed amount to ETH
                 uint256 tokenInEthOverflowed = tokensWorthInEth[i].sub(tokenShouldWorth);
-                uint256 tokensToConvert = _getTokenAmountByEthAmount(tokenInEthOverflowed, _strategyTokens[i], true);
-                uint256 ethConverted = _convertTokenToEth(tokensToConvert, _strategyTokens[i], deadline);
+                uint256 tokensToConvert = _getTokenAmountByEthAmount(tokenInEthOverflowed, _strategyTokens[i].tokenAddress, true);
+                uint256 ethConverted = _convertTokenToEth(tokensToConvert, _strategyTokens[i].tokenAddress, deadline);
                 totalEthConverted = totalEthConverted.add(ethConverted);
             }
             // Need the total value to help calculate how to distributed the converted ETH
@@ -304,12 +300,12 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         // Note: totalEthConverted would be a bit smaller than totalInEthToConvert due to Uniswap fee.
         // Converting everything is another way of rebalancing, but Uniswap would take 0.6% fee on everything.
         // In this method we reach the closest number with the lowest possible swapping fee.
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
             uint256 ethToConvert = totalEthConverted.mul(tokenInEthNeeded[i]).div(totalInEthToConvert);
-            _convertEthToToken(ethToConvert, _strategyTokens[i], deadline);
+            _convertEthToToken(ethToConvert, _strategyTokens[i].tokenAddress, deadline);
         }
 
-        emit Rebalance(_strategyTokens, percentageArray, totalTokenStored());
+        emit Rebalance(strategyTokensArray, percentageArray, totalTokenStored());
     }
 
     /**
@@ -404,8 +400,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         address[] memory path = new address[](2);
         path[1] = uniswapRouter.WETH();
 
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            address tokenAddress = _strategyTokens[i];
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            address tokenAddress = _strategyTokens[i].tokenAddress;
             path[0] = tokenAddress;
             uint256 tokenAmount = strategyTokensBalance_[i];
             uint256 tokenAmountInEth = _getEthAmountByTokenAmount(tokenAmount, tokenAddress, excludeFees);
@@ -420,11 +416,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @param _amount Amount of DR-POD to convert.
      */
     function _getStrategyTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
-        uint256[] memory strategyTokenAmount = new uint256[](strategyTokenCount());
+        uint256[] memory strategyTokenAmount = new uint256[](_strategyTokenCount);
 
         uint256 podFraction = _amount.mul(1e10).div(totalSupply());
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            strategyTokenAmount[i] = IERC20(_strategyTokens[i]).balanceOf(address(this)).mul(podFraction).div(1e10);
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            strategyTokenAmount[i] = IERC20(_strategyTokens[i].tokenAddress).balanceOf(address(this)).mul(podFraction).div(1e10);
         }
         return strategyTokenAmount;
     }
@@ -484,9 +480,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         uint256 amount, 
         uint32 deadline
     ) private returns (uint256[] memory) {
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            uint256 amountToConvert = amount.mul(_tokenPercentage[_strategyTokens[i]]).div(100);
-            _convertEthToToken(amountToConvert, _strategyTokens[i], deadline);
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            uint256 amountToConvert = amount.mul(_strategyTokens[i].tokenPercentage).div(100);
+            _convertEthToToken(amountToConvert, _strategyTokens[i].tokenAddress, deadline);
         }
     }
 
@@ -500,8 +496,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         uint32 deadline
     ) private returns (uint256) {
         uint256 ethConverted = 0;
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            uint256 amountConverted = _convertTokenToEth(amountToConvert[i], _strategyTokens[i], deadline);
+        for (uint8 i = 0; i < _strategyTokenCount; i++) {
+            uint256 amountConverted = _convertTokenToEth(amountToConvert[i], _strategyTokens[i].tokenAddress, deadline);
             ethConverted = ethConverted.add(amountConverted);
         }
         return ethConverted;

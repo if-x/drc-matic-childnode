@@ -16,13 +16,7 @@ interface IDigitalReserve {
      * @dev Returns a strategy token address. 
      * @param index The index of a strategy token
      */
-    function strategyTokens(uint8 index) external view returns (address);
-
-    /**
-     * @dev Returns strategy token percentage allocation.
-     * @param tokenAddress The address of a strategy token
-     */
-    function tokenPercentage(address tokenAddress) external view returns (uint8);
+    function strategyTokens(uint8 index) external view returns (address, uint8);
 
     /**
      * @dev Returns withdrawal withdrawal fee.

@@ -341,15 +341,7 @@ export interface DigitalReserveInstance extends Truffle.ContractInstance {
   strategyTokens(
     index: number | BN | string,
     txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  /**
-   * See {IDigitalReserve-tokenPercentage}.
-   */
-  tokenPercentage(
-    tokenAddress: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
+  ): Promise<{ 0: string; 1: BN }>;
 
   /**
    * See {IDigitalReserve-withdrawalFee}.
@@ -787,15 +779,7 @@ export interface DigitalReserveInstance extends Truffle.ContractInstance {
     strategyTokens(
       index: number | BN | string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-
-    /**
-     * See {IDigitalReserve-tokenPercentage}.
-     */
-    tokenPercentage(
-      tokenAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
+    ): Promise<{ 0: string; 1: BN }>;
 
     /**
      * See {IDigitalReserve-withdrawalFee}.

@@ -126,13 +126,9 @@ export const testSetStrategy = async () => {
     ];
     const expectedPercentages = [40, 40, 20];
     for (let i = 0; i < strateyTokenCount; i++) {
-      const tokenAddress = await instance.strategyTokens(i);
-      assert.equal(tokenAddress, expectedAddresses[i]);
-
-      const tokenPercentage = (
-        await instance.tokenPercentage(tokenAddress)
-      ).toNumber();
-      assert.equal(tokenPercentage, expectedPercentages[i]);
+      const strategyToken = await instance.strategyTokens(i);
+      assert.equal(strategyToken[0], expectedAddresses[i]);
+      assert.equal(strategyToken[1].toNumber(), expectedPercentages[i]);
     }
 
     const tokens = await instance.totalTokenStored();

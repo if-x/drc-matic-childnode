@@ -87,16 +87,7 @@ export interface IDigitalReserveInstance extends Truffle.ContractInstance {
   strategyTokens(
     index: number | BN | string,
     txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  /**
-   * Returns strategy token percentage allocation.
-   * @param tokenAddress The address of a strategy token
-   */
-  tokenPercentage(
-    tokenAddress: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
+  ): Promise<{ 0: string; 1: BN }>;
 
   /**
    * Returns withdrawal withdrawal fee.
@@ -228,16 +219,7 @@ export interface IDigitalReserveInstance extends Truffle.ContractInstance {
     strategyTokens(
       index: number | BN | string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-
-    /**
-     * Returns strategy token percentage allocation.
-     * @param tokenAddress The address of a strategy token
-     */
-    tokenPercentage(
-      tokenAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
+    ): Promise<{ 0: string; 1: BN }>;
 
     /**
      * Returns withdrawal withdrawal fee.
