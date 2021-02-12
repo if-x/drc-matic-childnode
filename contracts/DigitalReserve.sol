@@ -192,6 +192,7 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-withdrawPercentage}.
      */
     function withdrawPercentage(uint8 percentage, uint32 deadline) external override {
+        require(balanceOf(msg.sender) > 0, "Vault balance is 0");
         require(percentage <= 100, "Attempt to withdraw more than 100% of the asset");
 
         uint256 podToBurn = balanceOf(msg.sender).mul(percentage).div(100);
