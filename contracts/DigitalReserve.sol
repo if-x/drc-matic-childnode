@@ -446,6 +446,9 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @param _tokenAddress Address of token to swap to.
      */
     function _getEthToTokenPriceImpact(uint256 _amount, address _tokenAddress) private view returns (uint256) {
+        if(_tokenAddress == uniswapRouter.WETH() || _amount == 0) {
+            return 0;
+        }
         address factory = uniswapRouter.factory();
         address pair = IUniswapV2Factory(factory).getPair(uniswapRouter.WETH(), _tokenAddress);
         (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
