@@ -168,6 +168,8 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
      * @dev See {IDigitalReserve-withdrawDrc}.
      */
     function withdrawDrc(uint256 drcAmount, uint32 deadline) external override {
+        require(balanceOf(msg.sender) > 0, "Vault balance is 0");
+        
         address[] memory path = new address[](2);
         path[0] = uniswapRouter.WETH();
         path[1] = drcAddress;
@@ -315,11 +317,12 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
         // Note: totalEthConverted would be a bit smaller than totalInEthToConvert due to Uniswap fee.
         // Converting everything is another way of rebalancing, but Uniswap would take 0.6% fee on everything.
         // In this method we reach the closest number with the lowest possible swapping fee.
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            uint256 ethToConvert = totalEthConverted.mul(tokenInEthNeeded[i]).div(totalInEthToConvert);
-            _convertEthToToken(ethToConvert, _strategyTokens[i].tokenAddress, deadline);
+        if(totalInEthToConvert > 0) {
+            for (uint8 i = 0; i < strategyTokenCount(); i++) {
+                uint256 ethToConvert = totalEthConverted.mul(tokenInEthNeeded[i]).div(totalInEthToConvert);
+                _convertEthToToken(ethToConvert, _strategyTokens[i].tokenAddress, deadline);
+            }
         }
-
         emit Rebalance(strategyTokensArray, percentageArray, totalTokenStored());
     }
 
@@ -433,9 +436,11 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     function _getStrategyTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
         uint256[] memory strategyTokenAmount = new uint256[](strategyTokenCount());
 
-        uint256 podFraction = _amount.mul(1e10).div(totalSupply());
-        for (uint8 i = 0; i < strategyTokenCount(); i++) {
-            strategyTokenAmount[i] = IERC20(_strategyTokens[i].tokenAddress).balanceOf(address(this)).mul(podFraction).div(1e10);
+        if(totalSupply() > 0){
+            uint256 podFraction = _amount.mul(1e10).div(totalSupply());
+            for (uint8 i = 0; i < strategyTokenCount(); i++) {
+                strategyTokenAmount[i] = IERC20(_strategyTokens[i].tokenAddress).balanceOf(address(this)).mul(podFraction).div(1e10);
+            }
         }
         return strategyTokenAmount;
     }
