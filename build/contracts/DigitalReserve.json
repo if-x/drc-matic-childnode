@@ -57846,12 +57846,12 @@
         }
       },
       "links": {},
-      "address": "0x140D3Bb74645d4457f9953d2FA7c9be7f6C221c4",
-      "transactionHash": "0x46e217eaa32199edd2c664e90b7074648fb4cff4200452c473955fb50a10bf95"
+      "address": "0xAF1640cDEb03F3Ec31dDb5ee1b0B8C548D929A8C",
+      "transactionHash": "0xb8c55918b1bbecdf533ea4a016e25bc6172f2a973c5b1fa6484552e38a2e1a43"
     }
   },
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-02-12T01:09:54.472Z",
+  "updatedAt": "2021-02-12T01:23:13.675Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Implementation of Digital Reserve contract. Digital Reserve contract converts user's DRC into a set of SoV assets using the Uniswap router, and hold these assets for it's users. When users initiate a withdrawal action, the contract converts a share of the vault, that the user is requesting, to DRC and sends it back to their wallet.",

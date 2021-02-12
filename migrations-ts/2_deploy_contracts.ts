@@ -12,7 +12,7 @@ module.exports = async (
     "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
     "0x6D38D09eb9705A5Fb1b8922eA80ea89d438159C7",
     "Digital Reserve",
-    "DR-POD-S1"
+    "DR-POD-S2"
   );
 
   const digitalReserve = await DigitalReserve.deployed();
