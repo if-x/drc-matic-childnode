@@ -436,11 +436,12 @@ contract DigitalReserve is IDigitalReserve, ERC20, Ownable {
     function _getStrategyTokensByPodAmount(uint256 _amount) private view returns (uint256[] memory) {
         uint256[] memory strategyTokenAmount = new uint256[](strategyTokenCount());
 
+        uint256 podFraction = 0;
         if(totalSupply() > 0){
-            uint256 podFraction = _amount.mul(1e10).div(totalSupply());
-            for (uint8 i = 0; i < strategyTokenCount(); i++) {
-                strategyTokenAmount[i] = IERC20(_strategyTokens[i].tokenAddress).balanceOf(address(this)).mul(podFraction).div(1e10);
-            }
+            podFraction = _amount.mul(1e10).div(totalSupply());
+        }
+        for (uint8 i = 0; i < strategyTokenCount(); i++) {
+            strategyTokenAmount[i] = IERC20(_strategyTokens[i].tokenAddress).balanceOf(address(this)).mul(podFraction).div(1e10);
         }
         return strategyTokenAmount;
     }
