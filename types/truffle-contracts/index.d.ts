@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { ChildERC20Contract } from "./ChildERC20";
 import { ChildTokenContract } from "./ChildToken";
 import { DRCChildERC20Contract } from "./DRCChildERC20";
 import { ERC20Contract } from "./ERC20";
@@ -16,7 +15,6 @@ import { OwnableContract } from "./Ownable";
 declare global {
   namespace Truffle {
     interface Artifacts {
-      require(name: "ChildERC20"): ChildERC20Contract;
       require(name: "ChildToken"): ChildTokenContract;
       require(name: "DRCChildERC20"): DRCChildERC20Contract;
       require(name: "ERC20"): ERC20Contract;
@@ -30,7 +28,6 @@ declare global {
   }
 }
 
-export { ChildERC20Contract, ChildERC20Instance } from "./ChildERC20";
 export { ChildTokenContract, ChildTokenInstance } from "./ChildToken";
 export { DRCChildERC20Contract, DRCChildERC20Instance } from "./DRCChildERC20";
 export { ERC20Contract, ERC20Instance } from "./ERC20";
