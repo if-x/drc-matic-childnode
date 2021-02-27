@@ -1,4 +1,4 @@
-const DigitalReserve = artifacts.require("DigitalReserve");
+const DrcChildERC20 = artifacts.require("DRCChildERC20");
 
 type Network = "development" | "ropsten" | "main";
 
@@ -8,16 +8,17 @@ module.exports = async (
   // accounts: string[]
 ) => {
   await deployer.deploy(
-    DigitalReserve,
-    "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-    "0x6D38D09eb9705A5Fb1b8922eA80ea89d438159C7",
-    "Digital Reserve",
-    "DR-POD-S2"
+    DrcChildERC20,
+    "0x67667423dE274175338F238F0991feF92034fA28",
+    "0x0446C2B191BCEb6E53b7c01A7135AfB550D3e8f6",
+    "Digital Reserve Currency",
+    "DRC",
+    0
   );
 
-  const digitalReserve = await DigitalReserve.deployed();
+  const drcChildERC20 = await DrcChildERC20.deployed();
   console.log(
-    `DigitalReserve deployed at ${digitalReserve.address} in network: ${network}.`
+    `Drc Child ERC20 deployed at ${drcChildERC20.address} in network: ${network}.`
   );
 };
 

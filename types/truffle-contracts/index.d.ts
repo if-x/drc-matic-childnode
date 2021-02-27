@@ -2,59 +2,47 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { DigitalReserveContract } from "./DigitalReserve";
+import { ChildERC20Contract } from "./ChildERC20";
+import { ChildTokenContract } from "./ChildToken";
+import { DRCChildERC20Contract } from "./DRCChildERC20";
 import { ERC20Contract } from "./ERC20";
-import { IDigitalReserveContract } from "./IDigitalReserve";
 import { IERC20Contract } from "./IERC20";
-import { IUniswapV2FactoryContract } from "./IUniswapV2Factory";
-import { IUniswapV2PairContract } from "./IUniswapV2Pair";
-import { IUniswapV2Router01Contract } from "./IUniswapV2Router01";
-import { IUniswapV2Router02Contract } from "./IUniswapV2Router02";
+import { IParentTokenContract } from "./IParentToken";
+import { LibEIP712DomainContract } from "./LibEIP712Domain";
+import { LibTokenTransferOrderContract } from "./LibTokenTransferOrder";
 import { MigrationsContract } from "./Migrations";
 import { OwnableContract } from "./Ownable";
 
 declare global {
   namespace Truffle {
     interface Artifacts {
-      require(name: "DigitalReserve"): DigitalReserveContract;
+      require(name: "ChildERC20"): ChildERC20Contract;
+      require(name: "ChildToken"): ChildTokenContract;
+      require(name: "DRCChildERC20"): DRCChildERC20Contract;
       require(name: "ERC20"): ERC20Contract;
-      require(name: "IDigitalReserve"): IDigitalReserveContract;
       require(name: "IERC20"): IERC20Contract;
-      require(name: "IUniswapV2Factory"): IUniswapV2FactoryContract;
-      require(name: "IUniswapV2Pair"): IUniswapV2PairContract;
-      require(name: "IUniswapV2Router01"): IUniswapV2Router01Contract;
-      require(name: "IUniswapV2Router02"): IUniswapV2Router02Contract;
+      require(name: "IParentToken"): IParentTokenContract;
+      require(name: "LibEIP712Domain"): LibEIP712DomainContract;
+      require(name: "LibTokenTransferOrder"): LibTokenTransferOrderContract;
       require(name: "Migrations"): MigrationsContract;
       require(name: "Ownable"): OwnableContract;
     }
   }
 }
 
-export {
-  DigitalReserveContract,
-  DigitalReserveInstance,
-} from "./DigitalReserve";
+export { ChildERC20Contract, ChildERC20Instance } from "./ChildERC20";
+export { ChildTokenContract, ChildTokenInstance } from "./ChildToken";
+export { DRCChildERC20Contract, DRCChildERC20Instance } from "./DRCChildERC20";
 export { ERC20Contract, ERC20Instance } from "./ERC20";
-export {
-  IDigitalReserveContract,
-  IDigitalReserveInstance,
-} from "./IDigitalReserve";
 export { IERC20Contract, IERC20Instance } from "./IERC20";
+export { IParentTokenContract, IParentTokenInstance } from "./IParentToken";
 export {
-  IUniswapV2FactoryContract,
-  IUniswapV2FactoryInstance,
-} from "./IUniswapV2Factory";
+  LibEIP712DomainContract,
+  LibEIP712DomainInstance,
+} from "./LibEIP712Domain";
 export {
-  IUniswapV2PairContract,
-  IUniswapV2PairInstance,
-} from "./IUniswapV2Pair";
-export {
-  IUniswapV2Router01Contract,
-  IUniswapV2Router01Instance,
-} from "./IUniswapV2Router01";
-export {
-  IUniswapV2Router02Contract,
-  IUniswapV2Router02Instance,
-} from "./IUniswapV2Router02";
+  LibTokenTransferOrderContract,
+  LibTokenTransferOrderInstance,
+} from "./LibTokenTransferOrder";
 export { MigrationsContract, MigrationsInstance } from "./Migrations";
 export { OwnableContract, OwnableInstance } from "./Ownable";

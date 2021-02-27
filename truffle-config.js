@@ -26,6 +26,16 @@ module.exports = {
       port: 7545,
       network_id: "*",
     },
+    mumbai: {
+      provider: () =>
+        new HDWalletProvider(mnemonic, "https://rpc-mumbai.matic.today"),
+      network_id: 80001,
+      confirmations: 2,
+      gas: 5500000,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      from: fromAddress,
+    },
     ropsten: {
       provider: () =>
         new HDWalletProvider(
@@ -50,10 +60,8 @@ module.exports = {
       version: "0.6.12",
       settings: {
         optimizer: {
-          enabled: true,
-          runs: 999999,
+          enabled: false,
         },
-        evmVersion: "istanbul",
       },
     },
   },

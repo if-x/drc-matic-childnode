@@ -1,34 +1,26 @@
 {
-  "name": "digital-reserve",
+  "name": "matic-childnode",
   "version": "1.0.0",
-  "description": "Digital Reserve (DR) smart contract for DRC token holders to get easy exposure to a basket of store of value (SoV) assets.",
+  "description": "",
   "main": "truffle-config.js",
-  "keywords": [
-    "digital-reserve-currency",
-    "drc",
-    "store-of-value",
-    "sov"
-  ],
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "airdrop": "yarn compile-tools && truffle exec local-tools/ropsten-airdrop.js",
     "compile": "truffle compile",
     "compile-ts": "tsc -p ./tsconfig.migrate.json --outDir ./migrations",
-    "compile-tools": "tsc -p ./tsconfig.tools.json --outDir ./local-tools",
     "etherscan-verify": "truffle run verify DigitalReserve",
     "etherscan-verify:ropsten": "yarn etherscan-verify --network ropsten",
+    "flatten": "truffle-flattener contracts/DRCChildERC20.sol --output flatten.sol",
     "generate-types": "typechain --target=truffle-v5 'build/contracts/*.json'",
     "lint": "eslint --ignore-path .gitignore . --ext ts --ext tsx --ext js --ext jsx",
     "lint:fix": "npm run lint -- --fix",
     "migrate": "yarn compile-ts && truffle migrate",
+    "migrate:mumbai": "yarn migrate --network mumbai",
     "migrate:ropsten": "yarn migrate --network ropsten",
     "postinstall": "yarn compile && yarn generate-types",
     "prettier": "prettier --write 'contracts/**/*.sol'",
-    "start-server": "node server.js",
-    "test": "yarn compile-ts && truffle test",
-    "test:ropsten": "yarn test --network ropsten"
+    "start-server": "node server.js"
   },
   "author": "If.x",
   "license": "AGPL-3.0-or-later",
@@ -53,13 +45,10 @@
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.3",
     "truffle": "^5.1.62",
+    "truffle-flattener": "^1.5.0",
     "truffle-plugin-verify": "^0.5.4",
     "ts-node": "^9.1.1",
     "typechain": "^4.0.1",
     "typescript": "^4.1.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/if-x/digital-reserve"
   }
 }
