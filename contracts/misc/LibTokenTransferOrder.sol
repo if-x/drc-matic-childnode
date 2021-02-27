@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: MIT
+pragma solidity ^0.5.2;
 
-pragma solidity =0.6.12;
-
-import "./EIP712.sol";
+import {LibEIP712Domain} from "./EIP712.sol";
 
 contract LibTokenTransferOrder is LibEIP712Domain {
     string internal constant EIP712_TOKEN_TRANSFER_ORDER_SCHEMA = "TokenTransferOrder(address spender,uint256 tokenIdOrAmount,bytes32 data,uint256 expiration)";

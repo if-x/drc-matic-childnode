@@ -2,35 +2,45 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import { BaseERC20Contract } from "./BaseERC20";
 import { ChildTokenContract } from "./ChildToken";
 import { DRCChildERC20Contract } from "./DRCChildERC20";
 import { ERC20Contract } from "./ERC20";
+import { ERC20DetailedContract } from "./ERC20Detailed";
 import { IERC20Contract } from "./IERC20";
 import { IParentTokenContract } from "./IParentToken";
 import { LibEIP712DomainContract } from "./LibEIP712Domain";
 import { LibTokenTransferOrderContract } from "./LibTokenTransferOrder";
 import { MigrationsContract } from "./Migrations";
 import { OwnableContract } from "./Ownable";
+import { StateReceiverContract } from "./StateReceiver";
+import { StateSyncerVerifierContract } from "./StateSyncerVerifier";
 
 declare global {
   namespace Truffle {
     interface Artifacts {
+      require(name: "BaseERC20"): BaseERC20Contract;
       require(name: "ChildToken"): ChildTokenContract;
       require(name: "DRCChildERC20"): DRCChildERC20Contract;
       require(name: "ERC20"): ERC20Contract;
+      require(name: "ERC20Detailed"): ERC20DetailedContract;
       require(name: "IERC20"): IERC20Contract;
       require(name: "IParentToken"): IParentTokenContract;
       require(name: "LibEIP712Domain"): LibEIP712DomainContract;
       require(name: "LibTokenTransferOrder"): LibTokenTransferOrderContract;
       require(name: "Migrations"): MigrationsContract;
       require(name: "Ownable"): OwnableContract;
+      require(name: "StateReceiver"): StateReceiverContract;
+      require(name: "StateSyncerVerifier"): StateSyncerVerifierContract;
     }
   }
 }
 
+export { BaseERC20Contract, BaseERC20Instance } from "./BaseERC20";
 export { ChildTokenContract, ChildTokenInstance } from "./ChildToken";
 export { DRCChildERC20Contract, DRCChildERC20Instance } from "./DRCChildERC20";
 export { ERC20Contract, ERC20Instance } from "./ERC20";
+export { ERC20DetailedContract, ERC20DetailedInstance } from "./ERC20Detailed";
 export { IERC20Contract, IERC20Instance } from "./IERC20";
 export { IParentTokenContract, IParentTokenInstance } from "./IParentToken";
 export {
@@ -43,3 +53,8 @@ export {
 } from "./LibTokenTransferOrder";
 export { MigrationsContract, MigrationsInstance } from "./Migrations";
 export { OwnableContract, OwnableInstance } from "./Ownable";
+export { StateReceiverContract, StateReceiverInstance } from "./StateReceiver";
+export {
+  StateSyncerVerifierContract,
+  StateSyncerVerifierInstance,
+} from "./StateSyncerVerifier";

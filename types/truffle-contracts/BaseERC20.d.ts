@@ -5,9 +5,8 @@
 import BN from "bn.js";
 import { EventData, PastEventOptions } from "web3-eth-contract";
 
-export interface ChildTokenContract
-  extends Truffle.Contract<ChildTokenInstance> {
-  "new"(meta?: Truffle.TransactionDetails): Promise<ChildTokenInstance>;
+export interface BaseERC20Contract extends Truffle.Contract<BaseERC20Instance> {
+  "new"(meta?: Truffle.TransactionDetails): Promise<BaseERC20Instance>;
 }
 
 export interface ChildChainChanged {
@@ -20,8 +19,46 @@ export interface ChildChainChanged {
   };
 }
 
+export interface Deposit {
+  name: "Deposit";
+  args: {
+    token: string;
+    from: string;
+    amount: BN;
+    input1: BN;
+    output1: BN;
+    0: string;
+    1: string;
+    2: BN;
+    3: BN;
+    4: BN;
+  };
+}
+
 export interface LogFeeTransfer {
   name: "LogFeeTransfer";
+  args: {
+    token: string;
+    from: string;
+    to: string;
+    amount: BN;
+    input1: BN;
+    input2: BN;
+    output1: BN;
+    output2: BN;
+    0: string;
+    1: string;
+    2: string;
+    3: BN;
+    4: BN;
+    5: BN;
+    6: BN;
+    7: BN;
+  };
+}
+
+export interface LogTransfer {
+  name: "LogTransfer";
   args: {
     token: string;
     from: string;
@@ -62,13 +99,32 @@ export interface ParentChanged {
   };
 }
 
+export interface Withdraw {
+  name: "Withdraw";
+  args: {
+    token: string;
+    from: string;
+    amount: BN;
+    input1: BN;
+    output1: BN;
+    0: string;
+    1: string;
+    2: BN;
+    3: BN;
+    4: BN;
+  };
+}
+
 type AllEvents =
   | ChildChainChanged
+  | Deposit
   | LogFeeTransfer
+  | LogTransfer
   | OwnershipTransferred
-  | ParentChanged;
+  | ParentChanged
+  | Withdraw;
 
-export interface ChildTokenInstance extends Truffle.ContractInstance {
+export interface BaseERC20Instance extends Truffle.ContractInstance {
   EIP712_DOMAIN_HASH(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   EIP712_DOMAIN_SCHEMA_HASH(
@@ -79,12 +135,59 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
+  changeChildChain: {
+    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   childChain(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  deposit: {
+    (
+      user: string,
+      amountOrTokenId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      user: string,
+      amountOrTokenId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      user: string,
+      amountOrTokenId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      user: string,
+      amountOrTokenId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
 
   disabledHashes(
     arg0: string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
+
+  ecrecovery(
+    hash: string,
+    sig: string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string>;
 
   getTokenTransferOrderHash(
     spender: string,
@@ -119,6 +222,24 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
+  setParent: {
+    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   token(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
@@ -143,29 +264,6 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  deposit: {
-    (
-      user: string,
-      amountOrTokenId: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      user: string,
-      amountOrTokenId: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      user: string,
-      amountOrTokenId: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      user: string,
-      amountOrTokenId: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   withdraw: {
     (
       amountOrTokenId: number | BN | string,
@@ -185,47 +283,45 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  ecrecovery(
-    hash: string,
-    sig: string,
+  transferWithSig: {
+    (
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    sendTransaction(
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  balanceOf(
+    account: string,
     txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  changeChildChain: {
-    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      newAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      newAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  setParent: {
-    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      newAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      newAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      newAddress: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
+  ): Promise<BN>;
 
   methods: {
     EIP712_DOMAIN_HASH(txDetails?: Truffle.TransactionDetails): Promise<string>;
@@ -238,12 +334,59 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
 
+    changeChildChain: {
+      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     childChain(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+    deposit: {
+      (
+        user: string,
+        amountOrTokenId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        user: string,
+        amountOrTokenId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        user: string,
+        amountOrTokenId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        user: string,
+        amountOrTokenId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
 
     disabledHashes(
       arg0: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<boolean>;
+
+    ecrecovery(
+      hash: string,
+      sig: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
 
     getTokenTransferOrderHash(
       spender: string,
@@ -278,6 +421,24 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
       estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
     };
 
+    setParent: {
+      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     token(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
@@ -302,29 +463,6 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
-    deposit: {
-      (
-        user: string,
-        amountOrTokenId: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        user: string,
-        amountOrTokenId: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        user: string,
-        amountOrTokenId: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        user: string,
-        amountOrTokenId: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
     withdraw: {
       (
         amountOrTokenId: number | BN | string,
@@ -344,47 +482,45 @@ export interface ChildTokenInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
-    ecrecovery(
-      hash: string,
-      sig: string,
+    transferWithSig: {
+      (
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      sendTransaction(
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    balanceOf(
+      account: string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-
-    changeChildChain: {
-      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        newAddress: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newAddress: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newAddress: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    setParent: {
-      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        newAddress: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        newAddress: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        newAddress: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    ): Promise<BN>;
   };
 
   getPastEvents(event: string): Promise<EventData[]>;

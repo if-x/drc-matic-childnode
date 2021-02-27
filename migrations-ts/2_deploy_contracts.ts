@@ -9,7 +9,6 @@ module.exports = async (
 ) => {
   await deployer.deploy(
     DrcChildERC20,
-    "0x67667423dE274175338F238F0991feF92034fA28",
     "0x0446C2B191BCEb6E53b7c01A7135AfB550D3e8f6",
     "Digital Reserve Currency",
     "DRC",

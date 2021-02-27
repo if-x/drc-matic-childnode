@@ -1,6 +1,4 @@
-// SPDX-License-Identifier: MIT
-
-pragma solidity =0.6.12;
+pragma solidity ^0.5.2;
 
 contract LibEIP712Domain {
     string internal constant EIP712_DOMAIN_SCHEMA = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)";
@@ -10,7 +8,7 @@ contract LibEIP712Domain {
 
     string internal constant EIP712_DOMAIN_NAME = "Matic Network";
     string internal constant EIP712_DOMAIN_VERSION = "1";
-    uint256 internal constant EIP712_DOMAIN_CHAINID = 80001; // TODO: Change this for Polygon chain
+    uint256 internal constant EIP712_DOMAIN_CHAINID = 80001;
 
     bytes32 public EIP712_DOMAIN_HASH;
 
@@ -31,15 +29,31 @@ contract LibEIP712Domain {
         view
         returns (bytes32 result)
     {
-        bytes32 domainHash = EIP712_DOMAIN_HASH;
+        return _hashEIP712Message(hashStruct, EIP712_DOMAIN_HASH);
+    }
 
-        // Assembly for more efficient computing:
-        // keccak256(abi.encode(
-        //     EIP191_HEADER,
-        //     domainHash,
-        //     hashStruct
-        // ));
+    function hashEIP712MessageWithAddress(bytes32 hashStruct, address add)
+        internal
+        pure
+        returns (bytes32 result)
+    {
+        bytes32 domainHash = keccak256(
+            abi.encode(
+                EIP712_DOMAIN_SCHEMA_HASH,
+                keccak256(bytes(EIP712_DOMAIN_NAME)),
+                keccak256(bytes(EIP712_DOMAIN_VERSION)),
+                EIP712_DOMAIN_CHAINID,
+                add
+            )
+        );
+        return _hashEIP712Message(hashStruct, domainHash);
+    }
 
+    function _hashEIP712Message(bytes32 hashStruct, bytes32 domainHash)
+        internal
+        pure
+        returns (bytes32 result)
+    {
         assembly {
             // Load free memory pointer
             let memPtr := mload(64)
@@ -54,6 +68,5 @@ contract LibEIP712Domain {
             // Compute hash
             result := keccak256(memPtr, 66)
         }
-        return result;
     }
 }

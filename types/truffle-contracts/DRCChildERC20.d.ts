@@ -8,7 +8,6 @@ import { EventData, PastEventOptions } from "web3-eth-contract";
 export interface DRCChildERC20Contract
   extends Truffle.Contract<DRCChildERC20Instance> {
   "new"(
-    _owner: string,
     _token: string,
     _name: string,
     _symbol: string,
@@ -26,6 +25,16 @@ export interface Approval {
     0: string;
     1: string;
     2: BN;
+  };
+}
+
+export interface ChildChainChanged {
+  name: "ChildChainChanged";
+  args: {
+    previousAddress: string;
+    newAddress: string;
+    0: string;
+    1: string;
   };
 }
 
@@ -99,6 +108,26 @@ export interface OwnershipTransferred {
   };
 }
 
+export interface ParentChanged {
+  name: "ParentChanged";
+  args: {
+    previousAddress: string;
+    newAddress: string;
+    0: string;
+    1: string;
+  };
+}
+
+export interface StateSyncerAddressChanged {
+  name: "StateSyncerAddressChanged";
+  args: {
+    previousAddress: string;
+    newAddress: string;
+    0: string;
+    1: string;
+  };
+}
+
 export interface Transfer {
   name: "Transfer";
   args: {
@@ -129,10 +158,13 @@ export interface Withdraw {
 
 type AllEvents =
   | Approval
+  | ChildChainChanged
   | Deposit
   | LogFeeTransfer
   | LogTransfer
   | OwnershipTransferred
+  | ParentChanged
+  | StateSyncerAddressChanged
   | Transfer
   | Withdraw;
 
@@ -148,20 +180,59 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
   ): Promise<string>;
 
   /**
-   * See {IERC20-balanceOf}.
+   * Gets the balance of the specified address.
+   * @param owner The address to query the balance of.
+   * @returns A uint256 representing the amount owned by the passed address.
    */
-  balanceOf(
-    account: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
+  balanceOf(owner: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
+  changeChildChain: {
+    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  changeStateSyncerAddress: {
+    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  childChain(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
-   * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
+   * @returns the number of decimals of the token.
    */
   decimals(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   /**
-   * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+   * Decrease the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+   * @param spender The address which will spend the funds.
+   * @param subtractedValue The amount of tokens to decrease the allowance by.
    */
   decreaseAllowance: {
     (
@@ -206,7 +277,9 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
   ): Promise<string>;
 
   /**
-   * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+   * Increase the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+   * @param addedValue The amount of tokens to increase the allowance by.
+   * @param spender The address which will spend the funds.
    */
   increaseAllowance: {
     (
@@ -232,21 +305,32 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
   };
 
   /**
-   * Returns the name of the token.
+   * Returns true if the caller is the state syncer contract TODO: replace onlyOwner ownership with 0x1000 for validator majority
+   */
+  isOnlyStateSyncerContract(
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
+  /**
+   * @returns true if `msg.sender` is the owner of the contract.
+   */
+  isOwner(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+  /**
+   * @returns the name of the token.
    */
   name(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
-   * Returns the address of the current owner.
+   * @returns the address of the owner.
    */
   owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   parent(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-  parentOwner(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
   /**
-   * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
+   * Allows the current owner to relinquish control of the contract. It will not be possible to call the functions with the `onlyOwner` modifier anymore.
+   * Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
    */
   renounceOwnership: {
     (txDetails?: Truffle.TransactionDetails): Promise<
@@ -257,20 +341,41 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
+  setParent: {
+    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  stateSyncer(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
   /**
-   * Returns the symbol of the token, usually a shorter version of the name.
+   * @returns the symbol of the token.
    */
   symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   token(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
-   * See {IERC20-totalSupply}.
+   * Total number of tokens in existence
    */
   totalSupply(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   /**
-   * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
+   * Allows the current owner to transfer control of the contract to a newOwner.
+   * @param newOwner The address to transfer ownership to.
    */
   transferOwnership: {
     (newOwner: string, txDetails?: Truffle.TransactionDetails): Promise<
@@ -290,20 +395,37 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  setParent: {
-    (_parent: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      _parent: string,
+  transferWithSig: {
+    (
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
     sendTransaction(
-      _parent: string,
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _parent: string,
+      sig: string,
+      amount: number | BN | string,
+      data: string,
+      expiration: number | BN | string,
+      to: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -359,10 +481,34 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  onStateReceive: {
+    (
+      arg0: number | BN | string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      arg0: number | BN | string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      arg0: number | BN | string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      arg0: number | BN | string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   /**
    * Function that is called when a user or another contract wants to transfer funds.
    * @param to Address of token receiver.
    * @param value Number of tokens to transfer.
+   * @returns Returns success of function call.
    */
   transfer: {
     (
@@ -443,41 +589,6 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  transferWithSig: {
-    (
-      sig: string,
-      amount: number | BN | string,
-      data: string,
-      expiration: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      sig: string,
-      amount: number | BN | string,
-      data: string,
-      expiration: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    sendTransaction(
-      sig: string,
-      amount: number | BN | string,
-      data: string,
-      expiration: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      sig: string,
-      amount: number | BN | string,
-      data: string,
-      expiration: number | BN | string,
-      to: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   methods: {
     EIP712_DOMAIN_HASH(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
@@ -490,20 +601,62 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
     ): Promise<string>;
 
     /**
-     * See {IERC20-balanceOf}.
+     * Gets the balance of the specified address.
+     * @param owner The address to query the balance of.
+     * @returns A uint256 representing the amount owned by the passed address.
      */
     balanceOf(
-      account: string,
+      owner: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
 
+    changeChildChain: {
+      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    changeStateSyncerAddress: {
+      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    childChain(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
     /**
-     * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
+     * @returns the number of decimals of the token.
      */
     decimals(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     /**
-     * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+     * Decrease the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+     * @param spender The address which will spend the funds.
+     * @param subtractedValue The amount of tokens to decrease the allowance by.
      */
     decreaseAllowance: {
       (
@@ -548,7 +701,9 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
     ): Promise<string>;
 
     /**
-     * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+     * Increase the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+     * @param addedValue The amount of tokens to increase the allowance by.
+     * @param spender The address which will spend the funds.
      */
     increaseAllowance: {
       (
@@ -574,21 +729,32 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
     };
 
     /**
-     * Returns the name of the token.
+     * Returns true if the caller is the state syncer contract TODO: replace onlyOwner ownership with 0x1000 for validator majority
+     */
+    isOnlyStateSyncerContract(
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+
+    /**
+     * @returns true if `msg.sender` is the owner of the contract.
+     */
+    isOwner(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+    /**
+     * @returns the name of the token.
      */
     name(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
-     * Returns the address of the current owner.
+     * @returns the address of the owner.
      */
     owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     parent(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-    parentOwner(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
     /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
+     * Allows the current owner to relinquish control of the contract. It will not be possible to call the functions with the `onlyOwner` modifier anymore.
+     * Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
      */
     renounceOwnership: {
       (txDetails?: Truffle.TransactionDetails): Promise<
@@ -599,20 +765,41 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
       estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
     };
 
+    setParent: {
+      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    stateSyncer(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
     /**
-     * Returns the symbol of the token, usually a shorter version of the name.
+     * @returns the symbol of the token.
      */
     symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     token(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
-     * See {IERC20-totalSupply}.
+     * Total number of tokens in existence
      */
     totalSupply(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
+     * Allows the current owner to transfer control of the contract to a newOwner.
+     * @param newOwner The address to transfer ownership to.
      */
     transferOwnership: {
       (newOwner: string, txDetails?: Truffle.TransactionDetails): Promise<
@@ -632,20 +819,37 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
-    setParent: {
-      (_parent: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        _parent: string,
+    transferWithSig: {
+      (
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
         txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
       sendTransaction(
-        _parent: string,
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _parent: string,
+        sig: string,
+        amount: number | BN | string,
+        data: string,
+        expiration: number | BN | string,
+        to: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
@@ -701,10 +905,34 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    onStateReceive: {
+      (
+        arg0: number | BN | string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        arg0: number | BN | string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        arg0: number | BN | string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        arg0: number | BN | string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     /**
      * Function that is called when a user or another contract wants to transfer funds.
      * @param to Address of token receiver.
      * @param value Number of tokens to transfer.
+     * @returns Returns success of function call.
      */
     transfer: {
       (
@@ -781,41 +1009,6 @@ export interface DRCChildERC20Instance extends Truffle.ContractInstance {
         arg0: string,
         arg1: string,
         arg2: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    transferWithSig: {
-      (
-        sig: string,
-        amount: number | BN | string,
-        data: string,
-        expiration: number | BN | string,
-        to: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        sig: string,
-        amount: number | BN | string,
-        data: string,
-        expiration: number | BN | string,
-        to: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      sendTransaction(
-        sig: string,
-        amount: number | BN | string,
-        data: string,
-        expiration: number | BN | string,
-        to: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        sig: string,
-        amount: number | BN | string,
-        data: string,
-        expiration: number | BN | string,
-        to: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

@@ -25,7 +25,7 @@
   "author": "If.x",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
-    "@openzeppelin/contracts": "3.3.0"
+    "openzeppelin-solidity": "2.2.0"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.2.1",

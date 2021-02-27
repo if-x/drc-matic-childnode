@@ -6,11 +6,7 @@ import BN from "bn.js";
 import { EventData, PastEventOptions } from "web3-eth-contract";
 
 export interface ERC20Contract extends Truffle.Contract<ERC20Instance> {
-  "new"(
-    name_: string,
-    symbol_: string,
-    meta?: Truffle.TransactionDetails
-  ): Promise<ERC20Instance>;
+  "new"(meta?: Truffle.TransactionDetails): Promise<ERC20Instance>;
 }
 
 export interface Approval {
@@ -41,61 +37,22 @@ type AllEvents = Approval | Transfer;
 
 export interface ERC20Instance extends Truffle.ContractInstance {
   /**
-   * Returns the name of the token.
-   */
-  name(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  /**
-   * Returns the symbol of the token, usually a shorter version of the name.
-   */
-  symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  /**
-   * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
-   */
-  decimals(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-  /**
-   * See {IERC20-totalSupply}.
+   * Total number of tokens in existence
    */
   totalSupply(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   /**
-   * See {IERC20-balanceOf}.
+   * Gets the balance of the specified address.
+   * @param owner The address to query the balance of.
+   * @returns A uint256 representing the amount owned by the passed address.
    */
-  balanceOf(
-    account: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
+  balanceOf(owner: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   /**
-   * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
-   */
-  transfer: {
-    (
-      recipient: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      recipient: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<boolean>;
-    sendTransaction(
-      recipient: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      recipient: string,
-      amount: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  /**
-   * See {IERC20-allowance}.
+   * Function to check the amount of tokens that an owner allowed to a spender.
+   * @param owner address The address which owns the funds.
+   * @param spender address The address which will spend the funds.
+   * @returns A uint256 specifying the amount of tokens still available for the spender.
    */
   allowance(
     owner: string,
@@ -104,63 +61,98 @@ export interface ERC20Instance extends Truffle.ContractInstance {
   ): Promise<BN>;
 
   /**
-   * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
+   * Transfer token to a specified address
+   * @param to The address to transfer to.
+   * @param value The amount to be transferred.
+   */
+  transfer: {
+    (
+      to: string,
+      value: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      to: string,
+      value: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+    sendTransaction(
+      to: string,
+      value: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      to: string,
+      value: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
+   * Approve the passed address to spend the specified amount of tokens on behalf of msg.sender. Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+   * @param spender The address which will spend the funds.
+   * @param value The amount of tokens to be spent.
    */
   approve: {
     (
       spender: string,
-      amount: number | BN | string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
       spender: string,
-      amount: number | BN | string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<boolean>;
     sendTransaction(
       spender: string,
-      amount: number | BN | string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       spender: string,
-      amount: number | BN | string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
   /**
-   * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
+   * Transfer tokens from one address to another. Note that while this function emits an Approval event, this is not required as per the specification, and other compliant implementations may not emit the event.
+   * @param from address The address which you want to send tokens from
+   * @param to address The address which you want to transfer to
+   * @param value uint256 the amount of tokens to be transferred
    */
   transferFrom: {
     (
-      sender: string,
-      recipient: string,
-      amount: number | BN | string,
+      from: string,
+      to: string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      sender: string,
-      recipient: string,
-      amount: number | BN | string,
+      from: string,
+      to: string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<boolean>;
     sendTransaction(
-      sender: string,
-      recipient: string,
-      amount: number | BN | string,
+      from: string,
+      to: string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      sender: string,
-      recipient: string,
-      amount: number | BN | string,
+      from: string,
+      to: string,
+      value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
   /**
-   * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+   * Increase the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+   * @param addedValue The amount of tokens to increase the allowance by.
+   * @param spender The address which will spend the funds.
    */
   increaseAllowance: {
     (
@@ -186,7 +178,9 @@ export interface ERC20Instance extends Truffle.ContractInstance {
   };
 
   /**
-   * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+   * Decrease the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+   * @param spender The address which will spend the funds.
+   * @param subtractedValue The amount of tokens to decrease the allowance by.
    */
   decreaseAllowance: {
     (
@@ -213,61 +207,25 @@ export interface ERC20Instance extends Truffle.ContractInstance {
 
   methods: {
     /**
-     * Returns the name of the token.
-     */
-    name(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    /**
-     * Returns the symbol of the token, usually a shorter version of the name.
-     */
-    symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    /**
-     * Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is called. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.
-     */
-    decimals(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-    /**
-     * See {IERC20-totalSupply}.
+     * Total number of tokens in existence
      */
     totalSupply(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     /**
-     * See {IERC20-balanceOf}.
+     * Gets the balance of the specified address.
+     * @param owner The address to query the balance of.
+     * @returns A uint256 representing the amount owned by the passed address.
      */
     balanceOf(
-      account: string,
+      owner: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
 
     /**
-     * See {IERC20-transfer}. Requirements: - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.
-     */
-    transfer: {
-      (
-        recipient: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        recipient: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<boolean>;
-      sendTransaction(
-        recipient: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        recipient: string,
-        amount: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    /**
-     * See {IERC20-allowance}.
+     * Function to check the amount of tokens that an owner allowed to a spender.
+     * @param owner address The address which owns the funds.
+     * @param spender address The address which will spend the funds.
+     * @returns A uint256 specifying the amount of tokens still available for the spender.
      */
     allowance(
       owner: string,
@@ -276,63 +234,98 @@ export interface ERC20Instance extends Truffle.ContractInstance {
     ): Promise<BN>;
 
     /**
-     * See {IERC20-approve}. Requirements: - `spender` cannot be the zero address.
+     * Transfer token to a specified address
+     * @param to The address to transfer to.
+     * @param value The amount to be transferred.
+     */
+    transfer: {
+      (
+        to: string,
+        value: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        to: string,
+        value: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<boolean>;
+      sendTransaction(
+        to: string,
+        value: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        to: string,
+        value: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * Approve the passed address to spend the specified amount of tokens on behalf of msg.sender. Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+     * @param spender The address which will spend the funds.
+     * @param value The amount of tokens to be spent.
      */
     approve: {
       (
         spender: string,
-        amount: number | BN | string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
         spender: string,
-        amount: number | BN | string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<boolean>;
       sendTransaction(
         spender: string,
-        amount: number | BN | string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
         spender: string,
-        amount: number | BN | string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
 
     /**
-     * See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.
+     * Transfer tokens from one address to another. Note that while this function emits an Approval event, this is not required as per the specification, and other compliant implementations may not emit the event.
+     * @param from address The address which you want to send tokens from
+     * @param to address The address which you want to transfer to
+     * @param value uint256 the amount of tokens to be transferred
      */
     transferFrom: {
       (
-        sender: string,
-        recipient: string,
-        amount: number | BN | string,
+        from: string,
+        to: string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        sender: string,
-        recipient: string,
-        amount: number | BN | string,
+        from: string,
+        to: string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<boolean>;
       sendTransaction(
-        sender: string,
-        recipient: string,
-        amount: number | BN | string,
+        from: string,
+        to: string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        sender: string,
-        recipient: string,
-        amount: number | BN | string,
+        from: string,
+        to: string,
+        value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
 
     /**
-     * Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.
+     * Increase the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+     * @param addedValue The amount of tokens to increase the allowance by.
+     * @param spender The address which will spend the funds.
      */
     increaseAllowance: {
       (
@@ -358,7 +351,9 @@ export interface ERC20Instance extends Truffle.ContractInstance {
     };
 
     /**
-     * Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.
+     * Decrease the amount of tokens that an owner allowed to a spender. approve should be called when _allowed[msg.sender][spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol Emits an Approval event.
+     * @param spender The address which will spend the funds.
+     * @param subtractedValue The amount of tokens to decrease the allowance by.
      */
     decreaseAllowance: {
       (

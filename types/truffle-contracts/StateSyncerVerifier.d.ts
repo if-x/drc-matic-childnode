@@ -5,8 +5,11 @@
 import BN from "bn.js";
 import { EventData, PastEventOptions } from "web3-eth-contract";
 
-export interface OwnableContract extends Truffle.Contract<OwnableInstance> {
-  "new"(meta?: Truffle.TransactionDetails): Promise<OwnableInstance>;
+export interface StateSyncerVerifierContract
+  extends Truffle.Contract<StateSyncerVerifierInstance> {
+  "new"(
+    meta?: Truffle.TransactionDetails
+  ): Promise<StateSyncerVerifierInstance>;
 }
 
 export interface OwnershipTransferred {
@@ -19,18 +22,28 @@ export interface OwnershipTransferred {
   };
 }
 
-type AllEvents = OwnershipTransferred;
+export interface StateSyncerAddressChanged {
+  name: "StateSyncerAddressChanged";
+  args: {
+    previousAddress: string;
+    newAddress: string;
+    0: string;
+    1: string;
+  };
+}
 
-export interface OwnableInstance extends Truffle.ContractInstance {
-  /**
-   * @returns the address of the owner.
-   */
-  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
+type AllEvents = OwnershipTransferred | StateSyncerAddressChanged;
 
+export interface StateSyncerVerifierInstance extends Truffle.ContractInstance {
   /**
    * @returns true if `msg.sender` is the owner of the contract.
    */
   isOwner(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+  /**
+   * @returns the address of the owner.
+   */
+  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
    * Allows the current owner to relinquish control of the contract. It will not be possible to call the functions with the `onlyOwner` modifier anymore.
@@ -44,6 +57,8 @@ export interface OwnableInstance extends Truffle.ContractInstance {
     sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
+
+  stateSyncer(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
    * Allows the current owner to transfer control of the contract to a newOwner.
@@ -67,16 +82,41 @@ export interface OwnableInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  methods: {
-    /**
-     * @returns the address of the owner.
-     */
-    owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
+  /**
+   * Returns true if the caller is the state syncer contract TODO: replace onlyOwner ownership with 0x1000 for validator majority
+   */
+  isOnlyStateSyncerContract(
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
 
+  changeStateSyncerAddress: {
+    (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newAddress: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  methods: {
     /**
      * @returns true if `msg.sender` is the owner of the contract.
      */
     isOwner(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+    /**
+     * @returns the address of the owner.
+     */
+    owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
      * Allows the current owner to relinquish control of the contract. It will not be possible to call the functions with the `onlyOwner` modifier anymore.
@@ -90,6 +130,8 @@ export interface OwnableInstance extends Truffle.ContractInstance {
       sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
       estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
     };
+
+    stateSyncer(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
      * Allows the current owner to transfer control of the contract to a newOwner.
@@ -109,6 +151,31 @@ export interface OwnableInstance extends Truffle.ContractInstance {
       ): Promise<string>;
       estimateGas(
         newOwner: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * Returns true if the caller is the state syncer contract TODO: replace onlyOwner ownership with 0x1000 for validator majority
+     */
+    isOnlyStateSyncerContract(
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+
+    changeStateSyncerAddress: {
+      (newAddress: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newAddress: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newAddress: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
